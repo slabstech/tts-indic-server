@@ -2,14 +2,9 @@ import time
 from contextlib import asynccontextmanager
 from typing import Annotated, Any, OrderedDict,List
 import zipfile
-import os
-import huggingface_hub
 import soundfile as sf
 import torch
-from fastapi import Body, FastAPI, HTTPException, Response, BackgroundTasks
-from fastapi.responses import FileResponse
-from huggingface_hub.hf_api import ModelInfo
-from openai.types import Model
+from fastapi import Body, FastAPI, HTTPException, Response
 from parler_tts import ParlerTTSForConditionalGeneration
 from transformers import AutoTokenizer, AutoFeatureExtractor, set_seed
 import numpy as np
@@ -18,6 +13,17 @@ from logger import logger
 import uvicorn
 import argparse
 from fastapi.responses import RedirectResponse
+import io
+import zipfile
+from fastapi.responses import StreamingResponse
+from typing import List
+import numpy as np
+import soundfile as sf
+import time
+import os
+import logging
+
+
 
 # https://github.com/huggingface/parler-tts?tab=readme-ov-file#usage
 if torch.cuda.is_available():
@@ -137,8 +143,9 @@ def get_model(model_name: str) -> Model:
     )
 
 '''
-# https://platform.openai.com/docs/api-reference/audio/createSpeech
-# https://platform.openai.com/docs/api-reference/audio/createSpeech
+from fastapi.responses import StreamingResponse
+import io
+
 @app.post("/v1/audio/speech")
 async def generate_audio(
     input: Annotated[str, Body()] = config.input,
@@ -146,7 +153,7 @@ async def generate_audio(
     model: Annotated[str, Body()] = config.model,
     response_format: Annotated[ResponseFormat, Body(include_in_schema=False)] = config.response_format,
     speed: Annotated[float, Body(include_in_schema=False)] = SPEED,
-) -> FileResponse:
+) -> StreamingResponse:
     tts, tokenizer, description_tokenizer = model_manager.get_or_load_model(model)
     if speed != SPEED:
         logger.warning(
@@ -163,9 +170,7 @@ async def generate_audio(
     # Generate the audio
     generation = tts.generate(
         input_ids=input_ids, prompt_input_ids=prompt_input_ids
-    ).to(  # type: ignore
-        torch.float32
-    )
+    ).to(torch.float32)
     audio_arr = generation.cpu().numpy().squeeze()
 
     # Ensure device is a string
@@ -174,22 +179,21 @@ async def generate_audio(
     logger.info(
         f"Took {time.perf_counter() - start:.2f} seconds to generate audio for {len(input.split())} words using {device_str.upper()}"
     )
-    # TODO: use an in-memory file instead of writing to disk
-    sf.write(f"out.{response_format}", audio_arr, tts.config.sampling_rate)
-    return FileResponse(f"out.{response_format}", media_type=f"audio/{response_format}")
 
+    # Create an in-memory file
+    audio_buffer = io.BytesIO()
+    sf.write(audio_buffer, audio_arr, tts.config.sampling_rate, format=response_format)
+    audio_buffer.seek(0)
 
+    return StreamingResponse(audio_buffer, media_type=f"audio/{response_format}")
 
-def zip_files(file_paths, zip_filename):
-    with zipfile.ZipFile(zip_filename, 'w') as zipf:
-        for file_path in file_paths:
-            zipf.write(file_path, os.path.basename(file_path))
-
-def cleanup_files(file_paths, zip_filename):
-    for file_path in file_paths:
-        os.remove(file_path)
-    os.remove(zip_filename)
-
+def create_in_memory_zip(file_data):
+    in_memory_zip = io.BytesIO()
+    with zipfile.ZipFile(in_memory_zip, 'w') as zipf:
+        for file_name, data in file_data.items():
+            zipf.writestr(file_name, data)
+    in_memory_zip.seek(0)
+    return in_memory_zip
 
 
 # Define a function to split text into smaller chunks
@@ -200,7 +204,7 @@ def chunk_text(text, chunk_size):
         chunks.append(' '.join(words[i:i + chunk_size]))
     return chunks
 
-# https://platform.openai.com/docs/api-reference/audio/createSpeech
+
 @app.post("/v1/audio/speech_batch")
 async def generate_audio_batch(
     input: Annotated[List[str], Body()] = config.input,
@@ -208,14 +212,13 @@ async def generate_audio_batch(
     model: Annotated[str, Body(include_in_schema=False)] = config.model,
     response_format: Annotated[ResponseFormat, Body()] = config.response_format,
     speed: Annotated[float, Body(include_in_schema=False)] = SPEED,
-) -> FileResponse:
-    tts, tokenizer,description_tokenizer = model_manager.get_or_load_model(model)
+) -> StreamingResponse:
+    tts, tokenizer, description_tokenizer = model_manager.get_or_load_model(model)
     if speed != SPEED:
         logger.warning(
             "Specifying speed isn't supported by this model. Audio will be generated with the default speed"
         )
     start = time.perf_counter()
-    #input_ids = tokenizer(voice, return_tensors="pt").input_ids.to(device)
 
     length_of_input_text = len(input)
 
@@ -257,41 +260,23 @@ async def generate_audio_batch(
         combined_audio = np.concatenate(chunk_audios)
         audio_outputs.append(combined_audio)
 
-    # Save the final audio outputs
-    file_paths = []
+    # Save the final audio outputs in memory
+    file_data = {}
     for i, audio in enumerate(audio_outputs):
-        file_path = f"out_{i}.{response_format}"
-        sf.write(file_path, audio, tts.config.sampling_rate)
-        print(f"Processed chunk {i+1}/{length_of_input_text} and saved to {file_path}")
-        file_paths.append(file_path)
+        file_name = f"out_{i}.{response_format}"
+        audio_bytes = io.BytesIO()
+        sf.write(audio_bytes, audio, tts.config.sampling_rate, format=response_format)
+        audio_bytes.seek(0)
+        file_data[file_name] = audio_bytes.read()
 
+    # Create in-memory zip file
+    in_memory_zip = create_in_memory_zip(file_data)
 
-    # Zip the files
-    zip_filename = "audio_files.zip"
-    zip_files(file_paths, zip_filename)
-
-    # Cleanup the temporary files
-    for file_path in file_paths:
-        os.remove(file_path)
-
-    # Return the zip file
-
-      # Register the cleanup task
-    #background_tasks.add_task(cleanup_files, file_paths, zip_filename)
-
-    ''' TODO - fix conversion
-    logger.info(
-        f"Took {time.perf_counter() - start:.2f} seconds to generate audio for {len(input_str.split())} words using {device.upper()}"
-    )
-    '''
     logger.info(
         f"Took {time.perf_counter() - start:.2f} seconds to generate audio"
     )
-    # TODO: use an in-memory file instead of writing to disk
-    #sf.write(f"out.{response_format}", audio_arr, tts.config.sampling_rate)
-    #return FileResponse(f"out.{response_format}", media_type=f"audio/{response_format}")
-    return FileResponse(zip_filename, media_type="application/zip")
 
+    return StreamingResponse(in_memory_zip, media_type="application/zip")
 
 @app.get("/")
 async def home():

@@ -23,7 +23,7 @@ class Config(BaseSettings):
     model: str = "ai4bharat/indic-parler-tts"  # env: MODEL
     max_models: int = 1  # env: MAX_MODELS
     lazy_load_model: bool = False  # env: LAZY_LOAD_MODEL
-    input: str = "ನಿಮ್ಮ ಇನ್‌ಪುಟ್ ಪಠ್ಯವನ್ನು ಇಲ್ಲಿ ಸೇರಿಸಿ",
+    input: str = ("ನಿಮ್ಮ ಇನ್‌ಪುಟ್ ಪಠ್ಯವನ್ನು ಇಲ್ಲಿ ಸೇರಿಸಿ")
     voice: str = (
         "Female speaks with a high pitch at a normal pace in a clear, close-sounding environment. Her neutral tone is captured with excellent audio quality."  # env: VOICE
     )
