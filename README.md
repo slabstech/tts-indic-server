@@ -240,6 +240,12 @@ The model includes **69 speakers** across 18 officially supported languages, wit
 10. **Anjali - High-Pitched, Neutral Tone**:
     _"Anjali speaks with a high pitch at a normal pace in a clear, close-sounding environment. Her neutral tone is captured with excellent audio quality."_
 
+## Contributing
+
+We welcome contributions! Please read the [CONTRIBUTING.md](CONTRIBUTING.md) file for guidelines on how to contribute to this project.
+
+Also you can join the [discord group](https://discord.gg/WZMCerEZ2P) to collaborate
+
 - Reference
     - [ai4bharat/indic-parler-tts](https://huggingface.co/ai4bharat/indic-parler-tts)
 
