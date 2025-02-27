@@ -17,6 +17,7 @@ from config import SPEED, ResponseFormat, config
 from logger import logger
 import uvicorn
 import argparse
+from fastapi.responses import RedirectResponse
 
 # https://github.com/huggingface/parler-tts?tab=readme-ov-file#usage
 if torch.cuda.is_available():
@@ -284,6 +285,11 @@ async def generate_audio_batch(
     #sf.write(f"out.{response_format}", audio_arr, tts.config.sampling_rate)
     #return FileResponse(f"out.{response_format}", media_type=f"audio/{response_format}")
     return FileResponse(zip_filename, media_type="application/zip")
+
+
+@app.get("/")
+async def home():
+    return RedirectResponse(url="/docs")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the FastAPI server for TTS.")

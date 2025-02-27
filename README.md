@@ -51,13 +51,13 @@ You can test the service using `curl` commands. Below are examples for both serv
 #### High Latency Service
 
 ```bash kannada_example.sh
-curl -s -H "content-type: application/json" 'https://gaganyatri-tts-indic-server.hf.space/transcribe/?language=kannada' -d '{"input": "ಉದ್ಯಾನದಲ್ಲಿ ಮಕ್ಕಳ ಆಟವಾಡುತ್ತಿದ್ದಾರೆ ಮತ್ತು ಪಕ್ಷಿಗಳು ಚಿಲಿಪಿಲಿ ಮಾಡುತ್ತಿವೆ."}' -o audio_kannada.mp3
+curl -s -H "content-type: application/json" 'https://gaganyatri-tts-indic-server-cpu.hf.space/v1/audio/speech' -d '{"input": "ಉದ್ಯಾನದಲ್ಲಿ ಮಕ್ಕಳ ಆಟವಾಡುತ್ತಿದ್ದಾರೆ ಮತ್ತು ಪಕ್ಷಿಗಳು ಚಿಲಿಪಿಲಿ ಮಾಡುತ್ತಿವೆ."}' -o audio_kannada_cpu.mp3
 ```
 
 #### Low Latency Service
 
 ```bash kannada_example.sh
-curl -s -H "content-type: application/json" 'https://gaganyatri-tts-indic-server-cpu.hf.space/transcribe/?language=kannada' -d '{"input": "ಉದ್ಯಾನದಲ್ಲಿ ಮಕ್ಕಳ ಆಟವಾಡುತ್ತಿದ್ದಾರೆ ಮತ್ತು ಪಕ್ಷಿಗಳು ಚಿಲಿಪಿಲಿ ಮಾಡುತ್ತಿವೆ."}' -o audio_kannada.mp3
+curl -s -H "content-type: application/json" 'https://gaganyatri-tts-indic-server.hf.space/v1/audio/speech' -d '{"input": "ಉದ್ಯಾನದಲ್ಲಿ ಮಕ್ಕಳ ಆಟವಾಡುತ್ತಿದ್ದಾರೆ ಮತ್ತು ಪಕ್ಷಿಗಳು ಚಿಲಿಪಿಲಿ ಮಾಡುತ್ತಿವೆ."}' -o audio_kannada_gpu.mp3
 ```
 
 ## Getting Started - Development
