@@ -1,4 +1,5 @@
-FROM ubuntu:24.04
+FROM nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
+
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
@@ -24,4 +25,4 @@ USER appuser
 EXPOSE 7860
 
 # Use absolute path for clarity
-CMD ["python", "/app/src/tts_api.py", "--host", "0.0.0.0", "--port", "7860", "--device", "cpu"]
+CMD ["python", "/app/src/tts_api.py", "--host", "0.0.0.0", "--port", "7860", "--device", "cuda"]

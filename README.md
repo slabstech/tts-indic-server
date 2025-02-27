@@ -51,13 +51,21 @@ You can test the service using `curl` commands. Below are examples for both serv
 #### High Latency Service
 
 ```bash kannada_example.sh
-curl -s -H "content-type: application/json" 'https://gaganyatri-tts-indic-server.hf.space/transcribe/?language=kannada' -d '{"input": "ಉದ್ಯಾನದಲ್ಲಿ ಮಕ್ಕಳ ಆಟವಾಡುತ್ತಿದ್ದಾರೆ ಮತ್ತು ಪಕ್ಷಿಗಳು ಚಿಲಿಪಿಲಿ ಮಾಡುತ್ತಿವೆ."}' -o audio_kannada.mp3
+curl -X 'POST' \
+  'https://gaganyatri-tts-indic-server.hf.space/v1/audio/speech' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{"input": "ಉದ್ಯಾನದಲ್ಲಿ ಮಕ್ಕಳ ಆಟವಾಡುತ್ತಿದ್ದಾರೆ ಮತ್ತು ಪಕ್ಷಿಗಳು ಚಿಲಿಪಿಲಿ ಮಾಡುತ್ತಿವೆ.", "voice": "A female speaker delivers a slightly expressive and animated speech with a moderate speed and pitch. The recording is of very high quality, with the speakers voice sounding clear and very close up."}'  -o audio_kannada_gpu_cloud.mp3
 ```
 
 #### Low Latency Service
 
 ```bash kannada_example.sh
-curl -s -H "content-type: application/json" 'https://gaganyatri-tts-indic-server-cpu.hf.space/transcribe/?language=kannada' -d '{"input": "ಉದ್ಯಾನದಲ್ಲಿ ಮಕ್ಕಳ ಆಟವಾಡುತ್ತಿದ್ದಾರೆ ಮತ್ತು ಪಕ್ಷಿಗಳು ಚಿಲಿಪಿಲಿ ಮಾಡುತ್ತಿವೆ."}' -o audio_kannada.mp3
+curl -X 'POST' \
+  'https://gaganyatri-tts-indic-server-cpu.hf.space/v1/audio/speech' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{"input": "ಉದ್ಯಾನದಲ್ಲಿ ಮಕ್ಕಳ ಆಟವಾಡುತ್ತಿದ್ದಾರೆ ಮತ್ತು ಪಕ್ಷಿಗಳು ಚಿಲಿಪಿಲಿ ಮಾಡುತ್ತಿವೆ.", "voice": "A female speaker delivers a slightly expressive and animated speech with a moderate speed and pitch. The recording is of very high quality, with the speakers voice sounding clear and very close up."}'  -o audio_kannada_cpu_cloud.mp3
 ```
 
 ## Getting Started - Development
@@ -231,6 +239,12 @@ The model includes **69 speakers** across 18 officially supported languages, wit
 
 10. **Anjali - High-Pitched, Neutral Tone**:
     _"Anjali speaks with a high pitch at a normal pace in a clear, close-sounding environment. Her neutral tone is captured with excellent audio quality."_
+
+## Contributing
+
+We welcome contributions! Please read the [CONTRIBUTING.md](CONTRIBUTING.md) file for guidelines on how to contribute to this project.
+
+Also you can join the [discord group](https://discord.gg/WZMCerEZ2P) to collaborate
 
 - Reference
     - [ai4bharat/indic-parler-tts](https://huggingface.co/ai4bharat/indic-parler-tts)
