@@ -51,13 +51,21 @@ You can test the service using `curl` commands. Below are examples for both serv
 #### High Latency Service
 
 ```bash kannada_example.sh
-curl -s -H "content-type: application/json" 'https://gaganyatri-tts-indic-server-cpu.hf.space/v1/audio/speech' -d '{"input": "ಉದ್ಯಾನದಲ್ಲಿ ಮಕ್ಕಳ ಆಟವಾಡುತ್ತಿದ್ದಾರೆ ಮತ್ತು ಪಕ್ಷಿಗಳು ಚಿಲಿಪಿಲಿ ಮಾಡುತ್ತಿವೆ."}' -o audio_kannada_cpu.mp3
+curl -X 'POST' \
+  'https://gaganyatri-tts-indic-server.hf.space/v1/audio/speech' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{"input": "ಉದ್ಯಾನದಲ್ಲಿ ಮಕ್ಕಳ ಆಟವಾಡುತ್ತಿದ್ದಾರೆ ಮತ್ತು ಪಕ್ಷಿಗಳು ಚಿಲಿಪಿಲಿ ಮಾಡುತ್ತಿವೆ.", "voice": "A female speaker delivers a slightly expressive and animated speech with a moderate speed and pitch. The recording is of very high quality, with the speakers voice sounding clear and very close up."}'  -o audio_kannada_gpu_cloud.mp3
 ```
 
 #### Low Latency Service
 
 ```bash kannada_example.sh
-curl -s -H "content-type: application/json" 'https://gaganyatri-tts-indic-server.hf.space/v1/audio/speech' -d '{"input": "ಉದ್ಯಾನದಲ್ಲಿ ಮಕ್ಕಳ ಆಟವಾಡುತ್ತಿದ್ದಾರೆ ಮತ್ತು ಪಕ್ಷಿಗಳು ಚಿಲಿಪಿಲಿ ಮಾಡುತ್ತಿವೆ."}' -o audio_kannada_gpu.mp3
+curl -X 'POST' \
+  'https://gaganyatri-tts-indic-server-cpu.hf.space/v1/audio/speech' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{"input": "ಉದ್ಯಾನದಲ್ಲಿ ಮಕ್ಕಳ ಆಟವಾಡುತ್ತಿದ್ದಾರೆ ಮತ್ತು ಪಕ್ಷಿಗಳು ಚಿಲಿಪಿಲಿ ಮಾಡುತ್ತಿವೆ.", "voice": "A female speaker delivers a slightly expressive and animated speech with a moderate speed and pitch. The recording is of very high quality, with the speakers voice sounding clear and very close up."}'  -o audio_kannada_cpu_cloud.mp3
 ```
 
 ## Getting Started - Development

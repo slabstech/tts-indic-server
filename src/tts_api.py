@@ -141,11 +141,11 @@ def get_model(model_name: str) -> Model:
 # https://platform.openai.com/docs/api-reference/audio/createSpeech
 @app.post("/v1/audio/speech")
 async def generate_audio(
-    input: Annotated[str, Body()],
+    input: Annotated[str, Body()] = config.input,
     voice: Annotated[str, Body()] = config.voice,
     model: Annotated[str, Body()] = config.model,
-    response_format: Annotated[ResponseFormat, Body()] = config.response_format,
-    speed: Annotated[float, Body()] = SPEED,
+    response_format: Annotated[ResponseFormat, Body(include_in_schema=False)] = config.response_format,
+    speed: Annotated[float, Body(include_in_schema=False)] = SPEED,
 ) -> FileResponse:
     tts, tokenizer, description_tokenizer = model_manager.get_or_load_model(model)
     if speed != SPEED:
@@ -153,10 +153,14 @@ async def generate_audio(
             "Specifying speed isn't supported by this model. Audio will be generated with the default speed"
         )
     start = time.perf_counter()
-    # input_ids = tokenizer(voice, return_tensors="pt").input_ids.to(device)
+
+    # Tokenize the voice description
     input_ids = description_tokenizer(voice, return_tensors="pt").input_ids.to(device)
 
+    # Tokenize the input text
     prompt_input_ids = tokenizer(input, return_tensors="pt").input_ids.to(device)
+
+    # Generate the audio
     generation = tts.generate(
         input_ids=input_ids, prompt_input_ids=prompt_input_ids
     ).to(  # type: ignore
@@ -173,6 +177,8 @@ async def generate_audio(
     # TODO: use an in-memory file instead of writing to disk
     sf.write(f"out.{response_format}", audio_arr, tts.config.sampling_rate)
     return FileResponse(f"out.{response_format}", media_type=f"audio/{response_format}")
+
+
 
 def zip_files(file_paths, zip_filename):
     with zipfile.ZipFile(zip_filename, 'w') as zipf:
@@ -197,11 +203,11 @@ def chunk_text(text, chunk_size):
 # https://platform.openai.com/docs/api-reference/audio/createSpeech
 @app.post("/v1/audio/speech_batch")
 async def generate_audio_batch(
-    input: Annotated[List[str], Body()],
+    input: Annotated[List[str], Body()] = config.input,
     voice: Annotated[List[str], Body()] = config.voice,
-    model: Annotated[str, Body()] = config.model,
+    model: Annotated[str, Body(include_in_schema=False)] = config.model,
     response_format: Annotated[ResponseFormat, Body()] = config.response_format,
-    speed: Annotated[float, Body()] = SPEED,
+    speed: Annotated[float, Body(include_in_schema=False)] = SPEED,
 ) -> FileResponse:
     tts, tokenizer,description_tokenizer = model_manager.get_or_load_model(model)
     if speed != SPEED:
