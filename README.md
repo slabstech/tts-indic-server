@@ -58,7 +58,7 @@ curl -X 'POST' \
   -d '{"input": "ಉದ್ಯಾನದಲ್ಲಿ ಮಕ್ಕಳ ಆಟವಾಡುತ್ತಿದ್ದಾರೆ ಮತ್ತು ಪಕ್ಷಿಗಳು ಚಿಲಿಪಿಲಿ ಮಾಡುತ್ತಿವೆ.", "voice": "A female speaker delivers a slightly expressive and animated speech with a moderate speed and pitch. The recording is of very high quality, with the speakers voice sounding clear and very close up."}'  -o audio_kannada_cpu_cloud.mp3
 ```
 
-#### Paused, On-demand, $.05 /hour
+#### Paused, On-demand, $.05 /hour, Fast
 
 ```bash kannada_example.sh
 curl -X 'POST' \
