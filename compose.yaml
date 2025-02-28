@@ -1,5 +1,5 @@
 services:
-  asr-indic-server:
+  tts-indic-server:
     image: slabstech/tts_indic_server
     volumes:
       - ~/.cache/huggingface:/root/.cache/huggingface

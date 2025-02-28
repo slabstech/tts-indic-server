@@ -48,7 +48,17 @@ We have hosted a Text to Speech (TTS) service that can be used to verify the acc
 
 You can test the service using `curl` commands. Below are examples for both service modes:
 
-#### High Latency Service
+#### Available 24/7 - Free, Slow 
+
+```bash kannada_example.sh
+curl -X 'POST' \
+  'https://gaganyatri-tts-indic-server-cpu.hf.space/v1/audio/speech' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{"input": "ಉದ್ಯಾನದಲ್ಲಿ ಮಕ್ಕಳ ಆಟವಾಡುತ್ತಿದ್ದಾರೆ ಮತ್ತು ಪಕ್ಷಿಗಳು ಚಿಲಿಪಿಲಿ ಮಾಡುತ್ತಿವೆ.", "voice": "A female speaker delivers a slightly expressive and animated speech with a moderate speed and pitch. The recording is of very high quality, with the speakers voice sounding clear and very close up."}'  -o audio_kannada_cpu_cloud.mp3
+```
+
+#### Paused, On-demand, $.05 /hour
 
 ```bash kannada_example.sh
 curl -X 'POST' \
@@ -58,15 +68,6 @@ curl -X 'POST' \
   -d '{"input": "ಉದ್ಯಾನದಲ್ಲಿ ಮಕ್ಕಳ ಆಟವಾಡುತ್ತಿದ್ದಾರೆ ಮತ್ತು ಪಕ್ಷಿಗಳು ಚಿಲಿಪಿಲಿ ಮಾಡುತ್ತಿವೆ.", "voice": "A female speaker delivers a slightly expressive and animated speech with a moderate speed and pitch. The recording is of very high quality, with the speakers voice sounding clear and very close up."}'  -o audio_kannada_gpu_cloud.mp3
 ```
 
-#### Low Latency Service
-
-```bash kannada_example.sh
-curl -X 'POST' \
-  'https://gaganyatri-tts-indic-server-cpu.hf.space/v1/audio/speech' \
-  -H 'accept: application/json' \
-  -H 'Content-Type: application/json' \
-  -d '{"input": "ಉದ್ಯಾನದಲ್ಲಿ ಮಕ್ಕಳ ಆಟವಾಡುತ್ತಿದ್ದಾರೆ ಮತ್ತು ಪಕ್ಷಿಗಳು ಚಿಲಿಪಿಲಿ ಮಾಡುತ್ತಿವೆ.", "voice": "A female speaker delivers a slightly expressive and animated speech with a moderate speed and pitch. The recording is of very high quality, with the speakers voice sounding clear and very close up."}'  -o audio_kannada_cpu_cloud.mp3
-```
 
 ## Getting Started - Development
 
