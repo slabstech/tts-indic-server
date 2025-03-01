@@ -9,7 +9,7 @@ import os
 # Function to send text input to the API and retrieve the audio file
 def get_audio(input_text, voice_description):
     # Define the API endpoint and headers
-    url = "https://gaganyatri-tts-indic-server.hf.space/v1/audio/speech"
+    url = "localhost:9860/v1/audio/speech"
     headers = {
         "accept": "application/json",
         "Content-Type": "application/json"
