@@ -73,7 +73,7 @@ def get_audio(input_text, voice_description_id):
         return f"Error: {e}"
 
 # Load voice descriptions from JSON file
-voice_descriptions = load_voice_descriptions('voice_descriptions.json')
+voice_descriptions = load_voice_descriptions('voice_description_indian.json')
 
 # Extract IDs and descriptions for dropdown menu
 dropdown_choices = [(str(desc['id']), f"{desc['id']}: {desc['voice_description'][:50]}...") for desc in voice_descriptions]
