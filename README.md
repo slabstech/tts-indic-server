@@ -5,8 +5,6 @@ Text to Speech (TTS) for Indian languages using [ai4bharat/indic-parler-tts](htt
 
 ## Table of Contents
 - [Live Server](#live-server)
-  - [High Latency, Slow System (Available 24/7)](#high-latency-slow-system-available-247)
-  - [Low Latency, Fast System (Available on Request)](#low-latency-fast-system-available-on-request)
 - [Usage](#usage)
   - [How to Use the Service](#how-to-use-the-service)
     - [High Latency Service](#high-latency-service)
@@ -36,19 +34,18 @@ Text to Speech (TTS) for Indian languages using [ai4bharat/indic-parler-tts](htt
 
 We have hosted a Text to Speech (TTS) service that can be used to verify the accuracy of Speech generation. The service is available in two modes:
 
-### High Latency, Slow System (Available 24/7)
-- **URL**: [High Latency TTS Service](https://huggingface.co/spaces/gaganyatri/tts_indic_server_cpu)
 
 ### Low Latency, Fast System (Available on Request)
 - **URL**: [Low Latency TTS Service](https://huggingface.co/spaces/gaganyatri/tts_indic_server)
 
+<!--
 ## Usage
 
 ### How to Use the Service
 
 You can test the service using `curl` commands. Below are examples for both service modes:
 
-#### High Latency Service
+#### Paused, On-demand, $.05 /hour, Fast
 
 ```bash kannada_example.sh
 curl -X 'POST' \
@@ -57,16 +54,7 @@ curl -X 'POST' \
   -H 'Content-Type: application/json' \
   -d '{"input": "ಉದ್ಯಾನದಲ್ಲಿ ಮಕ್ಕಳ ಆಟವಾಡುತ್ತಿದ್ದಾರೆ ಮತ್ತು ಪಕ್ಷಿಗಳು ಚಿಲಿಪಿಲಿ ಮಾಡುತ್ತಿವೆ.", "voice": "A female speaker delivers a slightly expressive and animated speech with a moderate speed and pitch. The recording is of very high quality, with the speakers voice sounding clear and very close up."}'  -o audio_kannada_gpu_cloud.mp3
 ```
-
-#### Low Latency Service
-
-```bash kannada_example.sh
-curl -X 'POST' \
-  'https://gaganyatri-tts-indic-server-cpu.hf.space/v1/audio/speech' \
-  -H 'accept: application/json' \
-  -H 'Content-Type: application/json' \
-  -d '{"input": "ಉದ್ಯಾನದಲ್ಲಿ ಮಕ್ಕಳ ಆಟವಾಡುತ್ತಿದ್ದಾರೆ ಮತ್ತು ಪಕ್ಷಿಗಳು ಚಿಲಿಪಿಲಿ ಮಾಡುತ್ತಿವೆ.", "voice": "A female speaker delivers a slightly expressive and animated speech with a moderate speed and pitch. The recording is of very high quality, with the speakers voice sounding clear and very close up."}'  -o audio_kannada_cpu_cloud.mp3
-```
+-->
 
 ## Getting Started - Development
 

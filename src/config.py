@@ -25,7 +25,7 @@ class Config(BaseSettings):
     lazy_load_model: bool = False  # env: LAZY_LOAD_MODEL
     input: str = ("ನಿಮ್ಮ ಇನ್‌ಪುಟ್ ಪಠ್ಯವನ್ನು ಇಲ್ಲಿ ಸೇರಿಸಿ")
     voice: str = (
-        "Female speaks with a high pitch at a normal pace in a clear, close-sounding environment. Her neutral tone is captured with excellent audio quality."  # env: VOICE
+        "Anu speaks with a high pitch at a normal pace in a clear, close-sounding environment. Her neutral tone is captured with excellent audio quality"  # env: VOICE
     )
     response_format: ResponseFormat = ResponseFormat.MP3  # env: RESPONSE_FORMAT
 
