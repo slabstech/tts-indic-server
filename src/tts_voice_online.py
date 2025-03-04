@@ -33,7 +33,7 @@ def get_audio(input_text, voice_description_id):
             return f"Error: Voice description not found"
         
         # Define the API endpoint and headers
-        url = "http://localhost:9860/v1/audio/speech"
+        url = "https://gaganyatri-indic-all-server.hf.space/v1/audio/speech"
         headers = {
             "accept": "application/json",
             "Content-Type": "application/json"

@@ -1,198 +1,86 @@
 [
-    {
-      "id": 1,
-      "voice_description": "A male voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing his very low-pitched voice with crisp clarity.",
-      "output_file_name": "male_indian_very_low_pitch.mp3"
-    },
-    {
-      "id": 2,
-      "voice_description": "A female voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing her quite low-pitched voice with crisp clarity.",
-      "output_file_name": "female_indian_quite_low_pitch.mp3"
-    },
-    {
-      "id": 3,
-      "voice_description": "A male voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing his fairly low-pitched voice with crisp clarity.",
-      "output_file_name": "male_indian_fairly_low_pitch.mp3"
-    },
-    {
-      "id": 4,
-      "voice_description": "A female voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing her slightly low-pitched voice with crisp clarity.",
-      "output_file_name": "female_indian_slightly_low_pitch.mp3"
-    },
-    {
-      "id": 5,
-      "voice_description": "A female voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing her slightly high-pitched voice with crisp clarity.",
-      "output_file_name": "female_indian_slightly_high_pitch.mp3"
-    },
-    {
-      "id": 6,
-      "voice_description": "A male voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing his fairly high-pitched voice with crisp clarity.",
-      "output_file_name": "male_indian_fairly_high_pitch.mp3"
-    },
-    {
-      "id": 7,
-      "voice_description": "A female voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing her quite high-pitched voice with crisp clarity.",
-      "output_file_name": "female_indian_quite_high_pitch.mp3"
-    },
-    {
-      "id": 8,
-      "voice_description": "A male voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing his very high-pitched voice with crisp clarity.",
-      "output_file_name": "male_indian_very_high_pitch.mp3"
-    },
-    {
-      "id": 9,
-      "voice_description": "A female voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing her voice with crisp clarity. Her tone is very monotone.",
-      "output_file_name": "female_indian_monotone.mp3"
-    },
-    {
-      "id": 10,
-      "voice_description": "A female voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing her voice with crisp clarity. Her tone is quite monotone.",
-      "output_file_name": "female_indian_quite_monotone.mp3"
-    },
-    {
-      "id": 11,
-      "voice_description": "A male voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing his voice with crisp clarity. His tone is fairly monotone.",
-      "output_file_name": "male_indian_fairly_monotone.mp3"
-    },
-    {
-      "id": 12,
-      "voice_description": "A female voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing her voice with crisp clarity. Her tone is slightly monotone.",
-      "output_file_name": "female_indian_slightly_monotone.mp3"
-    },
-    {
-      "id": 13,
-      "voice_description": "A male voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing his voice with crisp clarity. His tone is slightly expressive and animated.",
-      "output_file_name": "male_indian_slightly_expressive.mp3"
-    },
-    {
-      "id": 14,
-      "voice_description": "A female voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing her voice with crisp clarity. Her tone is fairly expressive and animated.",
-      "output_file_name": "female_indian_fairly_expressive.mp3"
-    },
-    {
-      "id": 15,
-      "voice_description": "A male voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing his voice with crisp clarity. His tone is quite expressive and animated.",
-      "output_file_name": "male_indian_quite_expressive.mp3"
-    },
-    {
-      "id": 16,
-      "voice_description": "A female voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing her voice with crisp clarity. Her tone is very expressive and animated.",
-      "output_file_name": "female_indian_very_expressive.mp3"
-    },
-    {
-      "id": 17,
-      "voice_description": "A male voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing his voice with crisp clarity. He reads the book very slowly.",
-      "output_file_name": "male_indian_very_slow.mp3"
-    },
-    {
-      "id": 18,
-      "voice_description": "A female voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing her voice with crisp clarity. She reads the book quite slowly.",
-      "output_file_name": "female_indian_quite_slow.mp3"
-    },
-    {
-      "id": 19,
-      "voice_description": "A male voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing his voice with crisp clarity. He reads the book fairly slowly.",
-      "output_file_name": "male_indian_fairly_slow.mp3"
-    },
-    {
-      "id": 20,
-      "voice_description": "A female voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing her voice with crisp clarity. She reads the book slightly slowly.",
-      "output_file_name": "female_indian_slightly_slow.mp3"
-    },
-    {
-      "id": 21,
-      "voice_description": "A male voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing his voice with crisp clarity. He reads the book slightly quickly.",
-      "output_file_name": "male_indian_slightly_quick.mp3"
-    },
-    {
-      "id": 22,
-      "voice_description": "A female voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing her voice with crisp clarity. She reads the book fairly quickly.",
-      "output_file_name": "female_indian_fairly_quick.mp3"
-    },
-    {
-      "id": 23,
-      "voice_description": "A male voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing his voice with crisp clarity. He reads the book quite quickly.",
-      "output_file_name": "male_indian_quite_quick.mp3"
-    },
-    {
-      "id": 24,
-      "voice_description": "A female voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing her voice with crisp clarity. She reads the book very quickly.",
-      "output_file_name": "female_indian_very_quick.mp3"
-    },
-    {
-      "id": 25,
-      "voice_description": "A male voice with an Indian accent enunciates every word with precision. The recording is very bad, and the speaker's voice is very distant-sounding and noisy.",
-      "output_file_name": "male_indian_bad_recording.mp3"
-    },
-    {
-      "id": 26,
-      "voice_description": "A female voice with an Indian accent enunciates every word with precision. The speaker's voice is quite close-sounding but very noisy.",
-      "output_file_name": "female_indian_noisy.mp3"
-    },
-    {
-      "id": 27,
-      "voice_description": "A male voice with an Indian accent enunciates every word with precision. The speaker's voice is close-sounding but fairly noisy.",
-      "output_file_name": "male_indian_fairly_noisy.mp3"
-    },
-    {
-      "id": 28,
-      "voice_description": "A male voice with an Indian accent enunciates every word with precision. The speaker's voice is fairly distant-sounding.",
-      "output_file_name": "male_indian_fairly_distant.mp3"
-    },
-    {
-      "id": 29,
-      "voice_description": "A female voice with an Indian accent enunciates every word with precision. The speaker's voice is slightly distant-sounding.",
-      "output_file_name": "female_indian_slightly_distant.mp3"
-    },
-    {
-      "id": 30,
-      "voice_description": "A male voice with an Indian accent enunciates every word with precision. The speaker's voice is fairly close-sounding.",
-      "output_file_name": "male_indian_fairly_close.mp3"
-    },
-    {
-      "id": 31,
-      "voice_description": "A male voice with an Indian accent enunciates every word with precision. The speaker's voice is quite close-sounding and quite clean.",
-      "output_file_name": "male_indian_quite_clean.mp3"
-    },
-    {
-      "id": 32,
-      "voice_description": "A female voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding and clean, and the recording is excellent, capturing her voice with crisp clarity.",
-      "output_file_name": "female_indian_clean.mp3"
-    },
-    {
-      "id": 33,
-      "voice_description": "A male voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing his voice with crisp clarity.",
-      "output_file_name": "male_indian_accent.mp3"
-    },
-    {
-      "id": 34,
-      "voice_description": "A male voice with an English accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing his voice with crisp clarity.",
-      "output_file_name": "male_english_accent.mp3"
-    },
-    {
-      "id": 35,
-      "voice_description": "A male voice with a Pakistani accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing his voice with crisp clarity.",
-      "output_file_name": "male_pakistani_accent.mp3"
-    },
-    {
-      "id": 36,
-      "voice_description": "A female voice with an Italian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing her voice with crisp clarity.",
-      "output_file_name": "female_italian_accent.mp3"
-    },
-    {
-      "id": 37,
-      "voice_description": "A male voice with a South African accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing his voice with crisp clarity.",
-      "output_file_name": "male_south_african_accent.mp3"
-    },
-    {
-      "id": 38,
-      "voice_description": "A male voice with a Canadian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing his voice with crisp clarity.",
-      "output_file_name": "male_canadian_accent.mp3"
-    },
-    {
-      "id": 39,
-      "voice_description": "A female voice with an Indian accent enunciates every word with precision. The speaker's voice is very close-sounding, and the recording is excellent, capturing her voice with crisp clarity.",
-      "output_file_name": "female_indian_accent.mp3"
-    }
-  ]
-  
+  {
+    "id": "1",
+    "voiceDescription": "Aditi speaks with a slightly higher pitch in a close-sounding environment. Her voice is clear, with subtle emotional depth and a normal pace, all captured in high-quality recording.",
+    "outputFilename": "Aditi_SlightlyHighPitched.mp3",
+    "userDomainVoice": "Aditi"
+  },
+  {
+    "id": "2",
+    "voiceDescription": "Sita speaks at a fast pace with a slightly low-pitched voice, captured clearly in a close-sounding environment with excellent recording quality.",
+    "outputFilename": "Sita_RapidLowPitched.mp3",
+    "userDomainVoice": "Sita"
+  },
+  {
+    "id": "3",
+    "voiceDescription": "Tapan speaks at a moderate pace with a slightly monotone tone. The recording is clear, with a close sound and only minimal ambient noise.",
+    "outputFilename": "Tapan_ModerateMonotone.mp3",
+    "userDomainVoice": "Tapan"
+  },
+  {
+    "id": "4",
+    "voiceDescription": "Sunita speaks with a high pitch in a close environment. Her voice is clear, with slight dynamic changes, and the recording is of excellent quality.",
+    "outputFilename": "Sunita_HighPitchedHappy.mp3",
+    "userDomainVoice": "Sunita"
+  },
+  {
+    "id": "5",
+    "voiceDescription": "Karan’s high-pitched, engaging voice is captured in a clear, close-sounding recording. His slightly slower delivery conveys a positive tone.",
+    "outputFilename": "Karan_HighPitchedPositive.mp3",
+    "userDomainVoice": "Karan"
+  },
+  {
+    "id": "6",
+    "voiceDescription": "Amrita speaks with a high pitch at a slow pace. Her voice is clear, with excellent recording quality and only moderate background noise.",
+    "outputFilename": "Amrita_HighPitchedFlat.mp3",
+    "userDomainVoice": "Amrita"
+  },
+  {
+    "id": "7",
+    "voiceDescription": "Aditi speaks slowly with a high pitch and expressive tone. The recording is clear, showcasing her energetic and emotive voice.",
+    "outputFilename": "Aditi_SlowExpressive.mp3",
+    "userDomainVoice": "Aditi"
+  },
+  {
+    "id": "8",
+    "voiceDescription": "A young male speaker with a high-pitched American accent delivers speech at a slightly fast pace in a clear, close-sounding recording.",
+    "outputFilename": "YoungMale_AmericanAccent.mp3",
+    "userDomainVoice": "Young Male Speaker"
+  },
+  {
+    "id": "9",
+    "voiceDescription": "Bikram speaks with a higher pitch and fast pace, conveying urgency. The recording is clear and intimate, with great emotional depth.",
+    "outputFilename": "Bikram_HighPitchedUrgent.mp3",
+    "userDomainVoice": "Bikram"
+  },
+  {
+    "id": "10",
+    "voiceDescription": "Anjali speaks with a high pitch at a normal pace in a clear, close-sounding environment. Her neutral tone is captured with excellent audio quality.",
+    "outputFilename": "Anjali_HighPitchedNeutral.mp3",
+    "userDomainVoice": "Anjali"
+  },
+  {
+    "id": "11",
+    "voiceDescription": "Anu has a warm, inviting tone with moderate pacing and slight expressiveness. Her voice is clear and engaging, perfect for storytelling.",
+    "outputFilename": "Anu_WarmInviting.mp3",
+    "userDomainVoice": "Anu"
+  },
+  {
+    "id": "12",
+    "voiceDescription": "Suresh speaks in a deep, authoritative tone at a steady pace. His voice conveys confidence and clarity, suitable for presentations.",
+    "outputFilename": "Suresh_DeepAuthoritative.mp3",
+    "userDomainVoice": "Suresh"
+  },
+  {
+    "id": "13",
+    "voiceDescription": "Vidya's voice is soft and soothing, with a gentle pitch and slow delivery. Her speech is clear and calming, ideal for relaxation content.",
+    "outputFilename": "Vidya_SoftSoothing.mp3",
+    "userDomainVoice": "Vidya"
+  },
+  {
+    "id": "14",
+    "voiceDescription": "Chetan speaks with a moderate pitch and fast pace, conveying enthusiasm. His voice is clear and energetic, suitable for motivational speeches.",
+    "outputFilename": "Chetan_ModerateEnthusiastic.mp3",
+    "userDomainVoice": "Chetan"
+  }
+]
