@@ -161,17 +161,38 @@ async def generate_audio(
         )
     start = time.perf_counter()
 
-    # Tokenize the voice description
-    input_ids = description_tokenizer(voice, return_tensors="pt").input_ids.to(device)
 
-    # Tokenize the input text
-    prompt_input_ids = tokenizer(input, return_tensors="pt").input_ids.to(device)
+    chunk_size = 15
+    all_chunks = chunk_text(input, chunk_size)
 
-    # Generate the audio
-    generation = tts.generate(
-        input_ids=input_ids, prompt_input_ids=prompt_input_ids
-    ).to(torch.float32)
-    audio_arr = generation.cpu().numpy().squeeze()
+    if(len(all_chunks) <= chunk_size ):
+        # Tokenize the voice description
+        input_ids = description_tokenizer(voice, return_tensors="pt").input_ids.to(device)
+
+        # Tokenize the input text
+        prompt_input_ids = tokenizer(input, return_tensors="pt").input_ids.to(device)
+
+    
+
+        # Generate the audio
+        generation = tts.generate(
+            input_ids=input_ids, prompt_input_ids=prompt_input_ids
+        ).to(torch.float32)
+        audio_arr = generation.cpu().numpy().squeeze()
+    else:
+        all_descriptions = voice * len(all_chunks)
+        description_inputs = description_tokenizer(all_descriptions, return_tensors="pt", padding=True).to("cuda")
+        prompts = tokenizer(all_chunks, return_tensors="pt", padding=True).to("cuda")
+
+        set_seed(0)
+        generation = tts.generate(
+            input_ids=description_inputs.input_ids,
+            attention_mask=description_inputs.attention_mask,
+            prompt_input_ids=prompts.input_ids,
+            prompt_attention_mask=prompts.attention_mask,
+            do_sample=True,
+            return_dict_in_generate=True,
+        )
 
     # Ensure device is a string
     device_str = str(device)
