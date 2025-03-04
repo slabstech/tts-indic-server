@@ -193,6 +193,21 @@ async def generate_audio(
             do_sample=True,
             return_dict_in_generate=True,
         )
+        chunk_audios = []
+        '''
+        for j in range(len(all_chunks)):
+            audio_arr = generation.sequences[j][:generation.audios_length[j]].cpu().numpy().squeeze()
+            audio_arr = audio_arr.astype('float32')
+            chunk_audios.append(audio_arr)
+        combined_audio = np.concatenate(chunk_audios)
+        audio_arr = combined_audio
+        '''
+        for i, audio in enumerate(generation.sequences):
+            audio_data = audio[:generation.audios_length].cpu().numpy().squeeze()
+            chunk_audios.append(audio_data)
+        combined_audio = np.concatenate(chunk_audios)
+        audio_arr = combined_audio
+            
 
     # Ensure device is a string
     device_str = str(device)
