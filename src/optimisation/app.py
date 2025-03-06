@@ -25,7 +25,7 @@ def load_voice_descriptions(file_path):
 
 # Initialize the model and tokenizers
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
-model = ParlerTTSForConditionalGeneration.from_pretrained("ai4bharat/indic-parler-tts", attn_implementation="flash_attention_2").to(device)
+model = ParlerTTSForConditionalGeneration.from_pretrained("ai4bharat/indic-parler-tts").to(device)
 tokenizer = AutoTokenizer.from_pretrained("ai4bharat/indic-parler-tts")
 description_tokenizer = AutoTokenizer.from_pretrained(model.config.text_encoder._name_or_path)
 
