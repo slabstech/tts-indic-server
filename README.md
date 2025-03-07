@@ -33,12 +33,12 @@ Text to Speech (TTS) for Indian languages using [ai4bharat/indic-parler-tts](htt
 
 We have hosted a Text to Speech (TTS) service that can be used to verify the accuracy of Speech generation. 
 
-- [Gradio Demo](https://huggingface.co/spaces/gaganyatri/tts_indic_server)
+- [Gradio Demo](https://huggingface.co/spaces/Sahana31/tts_dhwani_usecase)
 
 ## Getting Started
 
 ### For Development (Local)
-- **Prerequisites**: Python 3.6+
+- **Prerequisites**: Python 3.10, Ubuntu 22.04
 - **Steps**:
   1. **Create a virtual environment**:
   ```bash
@@ -53,14 +53,9 @@ We have hosted a Text to Speech (TTS) service that can be used to verify the acc
   venv\Scripts\activate
   ```
   3. **Install dependencies**:
-  - For GPU
-      ```bash
-      pip install -r requirements.txt
-      ```
-  - For CPU only
-      ```bash
-      pip install -r cpu-requirements.txt
-      ```
+    ```bash
+    pip install -r requirements.txt
+    ```
 
 ## Downloading Indic TTS Model
 
@@ -68,18 +63,23 @@ We have hosted a Text to Speech (TTS) service that can be used to verify the acc
 huggingface_cli download ai4bharat/indic-parler-tts
 ```
 
+## Alternate forms of Development  
 
+**Install dependencies:**
+   ```bash
+   pip install -r server-requirements.txt
+   ```
 
 ### For server development
 #### Running with FastAPI Server
 Run the server using FastAPI with the desired language (e.g., Kannada):
 - for GPU
   ```bash
-  python src/tts_api.py --port 7860 --host 0.0.0.0 --device gpu
+  python src/server/tts_api.py --port 7860 --host 0.0.0.0 --device gpu
   ```
 - for CPU only
   ```bash
-  python src/tts_api.py --port 7860 --host 0.0.0.0 --device cpu
+  python src/server/tts_api.py --port 7860 --host 0.0.0.0 --device cpu
   ```
 
 ### Evaluating Results
