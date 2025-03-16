@@ -17,22 +17,21 @@ import io
 import os
 import logging
 
-# Device setup
 if torch.cuda.is_available():
     device = "cuda:0"
     logger.info("GPU will be used for inference")
 else:
     device = "cpu"
     logger.info("CPU will be used for inference")
-torch_dtype = torch.bfloat16 if device != "cpu" else torch.float32
+torch_dtype = torch.float16 if device != "cpu" else torch.float32
 
 # Check CUDA availability and version
 cuda_available = torch.cuda.is_available()
 cuda_version = torch.version.cuda if cuda_available else None
 
 if torch.cuda.is_available():
-    device_idx = torch.cuda.current_device()
-    capability = torch.cuda.get_device_capability(device_idx)
+    device = torch.cuda.current_device()
+    capability = torch.cuda.get_device_capability(device)
     compute_capability_float = float(f"{capability[0]}.{capability[1]}")
     print(f"CUDA version: {cuda_version}")
     print(f"CUDA Compute Capability: {compute_capability_float}")
@@ -44,17 +43,16 @@ class ModelManager:
         self.model_tokenizer: OrderedDict[
             str, tuple[ParlerTTSForConditionalGeneration, AutoTokenizer, AutoTokenizer]
         ] = OrderedDict()
-        self.max_length = 50
 
     def load_model(
         self, model_name: str
     ) -> tuple[ParlerTTSForConditionalGeneration, AutoTokenizer, AutoTokenizer]:
         logger.debug(f"Loading {model_name}...")
         start = time.perf_counter()
-        
         model_name = "ai4bharat/indic-parler-tts"
         attn_implementation = "flash_attention_2"
-        
+        torch_dtype = torch.bfloat16
+
         model = ParlerTTSForConditionalGeneration.from_pretrained(
             model_name,
             attn_implementation=attn_implementation
@@ -63,7 +61,7 @@ class ModelManager:
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         description_tokenizer = AutoTokenizer.from_pretrained(model.config.text_encoder._name_or_path)
 
-        # Set pad tokens
+        # Set pad token if not set
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
         if description_tokenizer.pad_token is None:
@@ -71,36 +69,9 @@ class ModelManager:
 
         # Update model configuration
         model.config.pad_token_id = tokenizer.pad_token_id
-        # Update for deprecation: use max_batch_size instead of batch_size
-        if hasattr(model.generation_config.cache_config, 'max_batch_size'):
-            model.generation_config.cache_config.max_batch_size = 1
-        model.generation_config.cache_implementation = "static"
-
-        # Compile the model
-        ##compile_mode = "default"
-        compile_mode = "reduce-overhead"
-        
-        model.forward = torch.compile(model.forward, mode=compile_mode)
-
-        # Warmup
-        warmup_inputs = tokenizer("Warmup text for compilation", 
-                                return_tensors="pt", 
-                                padding="max_length", 
-                                max_length=self.max_length).to(device)
-        
-        model_kwargs = {
-            "input_ids": warmup_inputs["input_ids"],
-            "attention_mask": warmup_inputs["attention_mask"],
-            "prompt_input_ids": warmup_inputs["input_ids"],
-            "prompt_attention_mask": warmup_inputs["attention_mask"],
-        }
-        
-        n_steps = 1 if compile_mode == "default" else 2
-        for _ in range(n_steps):
-            _ = model.generate(**model_kwargs)
 
         logger.info(
-            f"Loaded {model_name} with Flash Attention and compilation in {time.perf_counter() - start:.2f} seconds"
+            f"Loaded {model_name} and tokenizers in {time.perf_counter() - start:.2f} seconds"
         )
         return model, tokenizer, description_tokenizer
 
@@ -151,20 +122,12 @@ async def generate_audio(
     all_chunks = chunk_text(input, chunk_size)
 
     if len(all_chunks) <= chunk_size:
-        desc_inputs = description_tokenizer(voice,
-                                          return_tensors="pt",
-                                          padding="max_length",
-                                          max_length=model_manager.max_length).to(device)
-        prompt_inputs = tokenizer(input,
-                                return_tensors="pt",
-                                padding="max_length",
-                                max_length=model_manager.max_length).to(device)
+        input_ids = description_tokenizer(voice, return_tensors="pt").input_ids.to(device)
+        prompt_input_ids = tokenizer(input, return_tensors="pt").input_ids.to(device)
         
-        # Use the tensor fields directly instead of BatchEncoding object
-        input_ids = desc_inputs["input_ids"]
-        attention_mask = desc_inputs["attention_mask"]
-        prompt_input_ids = prompt_inputs["input_ids"]
-        prompt_attention_mask = prompt_inputs["attention_mask"]
+        # Create attention mask
+        attention_mask = torch.ones_like(input_ids)
+        prompt_attention_mask = torch.ones_like(prompt_input_ids)
 
         generation = tts.generate(
             input_ids=input_ids,
@@ -176,19 +139,15 @@ async def generate_audio(
         audio_arr = generation.cpu().float().numpy().squeeze()
     else:
         all_descriptions = [voice] * len(all_chunks)
-        description_inputs = description_tokenizer(all_descriptions,
-                                                 return_tensors="pt",
-                                                 padding=True).to(device)
-        prompts = tokenizer(all_chunks,
-                          return_tensors="pt",
-                          padding=True).to(device)
+        description_inputs = description_tokenizer(all_descriptions, return_tensors="pt", padding=True).to(device)
+        prompts = tokenizer(all_chunks, return_tensors="pt", padding=True).to(device)
 
         set_seed(0)
         generation = tts.generate(
-            input_ids=description_inputs["input_ids"],
-            attention_mask=description_inputs["attention_mask"],
-            prompt_input_ids=prompts["input_ids"],
-            prompt_attention_mask=prompts["attention_mask"],
+            input_ids=description_inputs.input_ids,
+            attention_mask=description_inputs.attention_mask,
+            prompt_input_ids=prompts.input_ids,
+            prompt_attention_mask=prompts.attention_mask,
             do_sample=True,
             return_dict_in_generate=True,
         )
@@ -234,6 +193,7 @@ async def generate_audio_batch(
     start = time.perf_counter()
 
     chunk_size = 15
+
     all_chunks = []
     all_descriptions = []
     for i, text in enumerate(input):
@@ -241,19 +201,15 @@ async def generate_audio_batch(
         all_chunks.extend(chunks)
         all_descriptions.extend([voice[i]] * len(chunks))
 
-    description_inputs = description_tokenizer(all_descriptions,
-                                             return_tensors="pt",
-                                             padding=True).to(device)
-    prompts = tokenizer(all_chunks,
-                       return_tensors="pt",
-                       padding=True).to(device)
+    description_inputs = description_tokenizer(all_descriptions, return_tensors="pt", padding=True).to(device)
+    prompts = tokenizer(all_chunks, return_tensors="pt", padding=True).to(device)
 
     set_seed(0)
     generation = tts.generate(
-        input_ids=description_inputs["input_ids"],
-        attention_mask=description_inputs["attention_mask"],
-        prompt_input_ids=prompts["input_ids"],
-        prompt_attention_mask=prompts["attention_mask"],
+        input_ids=description_inputs.input_ids,
+        attention_mask=description_inputs.attention_mask,
+        prompt_input_ids=prompts.input_ids,
+        prompt_attention_mask=prompts.attention_mask,
         do_sample=True,
         return_dict_in_generate=True,
     )

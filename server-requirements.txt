@@ -1,6 +1,16 @@
+packaging
 torch
-parler_tts @ git+https://github.com/huggingface/parler-tts.git@d108732cd57788ec86bc857d99a6cabd66663d68
-huggingface_hub
+transformers==4.48.0
+sentencepiece
+descript-audio-codec
+descript-audiotools @ git+https://github.com/descriptinc/audiotools
+protobuf>=4.0.0
 fastapi
-pydantic_settings
 uvicorn
+pydantic-settings
+huggingface-hub
+openai
+torch
+parler_tts @ git+https://github.com/slabstech/parler-tts.git
+packaging  # Added to resolve flash-attn dependency
+flash-attn

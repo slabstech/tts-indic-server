@@ -77,9 +77,7 @@ class ModelManager:
         model.generation_config.cache_implementation = "static"
 
         # Compile the model
-        ##compile_mode = "default"
-        compile_mode = "reduce-overhead"
-        
+        compile_mode = "default"
         model.forward = torch.compile(model.forward, mode=compile_mode)
 
         # Warmup
