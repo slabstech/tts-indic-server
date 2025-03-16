@@ -10,7 +10,6 @@ Text to Speech (TTS) for Indian languages using [ai4bharat/indic-parler-tts](htt
     - [High Latency Service](#high-latency-service)
     - [Low Latency Service](#low-latency-service)
 - [Getting Started - Development](#getting-started---development)
-  - [For Production (Docker)](#for-production-docker)
   - [For Development (Local)](#for-development-local)
 - [Downloading Indic TTS Model](#downloading-indic-tts-model)
 - [Running with FastAPI Server](#running-with-fastapi-server)
@@ -32,47 +31,14 @@ Text to Speech (TTS) for Indian languages using [ai4bharat/indic-parler-tts](htt
 
 ## Live Server
 
-We have hosted a Text to Speech (TTS) service that can be used to verify the accuracy of Speech generation. The service is available in two modes:
+We have hosted a Text to Speech (TTS) service that can be used to verify the accuracy of Speech generation. 
 
+- [Gradio Demo](https://huggingface.co/spaces/Sahana31/tts_dhwani_usecase)
 
-### Low Latency, Fast System (Available on Request)
-- **URL**: [Low Latency TTS Service](https://huggingface.co/spaces/gaganyatri/tts_indic_server)
-
-<!--
-## Usage
-
-### How to Use the Service
-
-You can test the service using `curl` commands. Below are examples for both service modes:
-
-#### Paused, On-demand, $.05 /hour, Fast
-
-```bash kannada_example.sh
-curl -X 'POST' \
-  'https://gaganyatri-tts-indic-server.hf.space/v1/audio/speech' \
-  -H 'accept: application/json' \
-  -H 'Content-Type: application/json' \
-  -d '{"input": "ಉದ್ಯಾನದಲ್ಲಿ ಮಕ್ಕಳ ಆಟವಾಡುತ್ತಿದ್ದಾರೆ ಮತ್ತು ಪಕ್ಷಿಗಳು ಚಿಲಿಪಿಲಿ ಮಾಡುತ್ತಿವೆ.", "voice": "A female speaker delivers a slightly expressive and animated speech with a moderate speed and pitch. The recording is of very high quality, with the speakers voice sounding clear and very close up."}'  -o audio_kannada_gpu_cloud.mp3
-```
--->
-
-## Getting Started - Development
-
-### For Production (Docker)
-- **Prerequisites**: Docker and Docker Compose
-- **Steps**:
-  1. **Start the server**:
-  For GPU
-  ```bash
-  docker compose -f compose.yaml up -d
-  ```
-  For CPU only
-  ```bash
-  docker compose -f cpu-compose.yaml up -d
-  ```
+## Getting Started
 
 ### For Development (Local)
-- **Prerequisites**: Python 3.6+
+- **Prerequisites**: Python 3.10, Ubuntu 22.04
 - **Steps**:
   1. **Create a virtual environment**:
   ```bash
@@ -87,14 +53,9 @@ curl -X 'POST' \
   venv\Scripts\activate
   ```
   3. **Install dependencies**:
-  - For GPU
-      ```bash
-      pip install -r requirements.txt
-      ```
-  - For CPU only
-      ```bash
-      pip install -r cpu-requirements.txt
-      ```
+    ```bash
+    pip install -r requirements.txt
+    ```
 
 ## Downloading Indic TTS Model
 
@@ -102,18 +63,26 @@ curl -X 'POST' \
 huggingface_cli download ai4bharat/indic-parler-tts
 ```
 
-## Running with FastAPI Server
+## Alternate forms of Development  
+
+**Install dependencies:**
+   ```bash
+   pip install -r server-requirements.txt
+   ```
+
+### For server development
+#### Running with FastAPI Server
 Run the server using FastAPI with the desired language (e.g., Kannada):
 - for GPU
   ```bash
-  python src/tts_api.py --port 7860 --host 0.0.0.0 --device gpu
+  python src/server/tts_api.py --port 7860 --host 0.0.0.0 --device gpu
   ```
 - for CPU only
   ```bash
-  python src/tts_api.py --port 7860 --host 0.0.0.0 --device cpu
+  python src/server/tts_api.py --port 7860 --host 0.0.0.0 --device cpu
   ```
 
-## Evaluating Results
+### Evaluating Results
 You can evaluate the ASR transcription results using `curl` commands. Below are examples for Kannada audio samples.
 
 #### Kannada
@@ -152,18 +121,6 @@ curl -s -H "content-type: application/json" localhost:7860/v1/audio/speech -d '{
 curl -s -H "content-type: application/json" localhost:7860/v1/audio/speech -d '{"input": "ಉದ್ಯಾನದಲ್ಲಿ ಮಕ್ಕಳ ಆಟವಾಡುತ್ತಿದ್ದಾರೆ ಮತ್ತು ಪಕ್ಷಿಗಳು ಚಿಲಿಪಿಲಿ ಮಾಡುತ್ತಿವೆ.", "voice": "Anu speaks with a high pitch at a normal pace in a clear, close-sounding environment. Her neutral tone is captured with excellent audio quality."}'  -o audio_kannada_describe_voice_specfic_speaker_anu.mp3
 ```
 
-
-
-## Building Docker Image
-Build the Docker image locally:
-```bash
-docker build -t slabstech/tts_indic_server -f Dockerfile .
-```
-
-### Run the Docker Image
-```bash
-docker run --gpus all -it --rm -p 7860:7860 slabstech/tts_indic_server
-```
 
 ## Available Speakers
 
@@ -260,3 +217,51 @@ Also you can join the [discord group](https://discord.gg/WZMCerEZ2P) to collabor
   primaryClass = {cs.SD}
 }
 ```
+
+
+<!--
+## Usage
+
+### How to Use the Service
+
+You can test the service using `curl` commands. Below are examples for both service modes:
+
+#### Paused, On-demand, $.05 /hour, Fast
+
+```bash kannada_example.sh
+curl -X 'POST' \
+  'https://gaganyatri-tts-indic-server.hf.space/v1/audio/speech' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{"input": "ಉದ್ಯಾನದಲ್ಲಿ ಮಕ್ಕಳ ಆಟವಾಡುತ್ತಿದ್ದಾರೆ ಮತ್ತು ಪಕ್ಷಿಗಳು ಚಿಲಿಪಿಲಿ ಮಾಡುತ್ತಿವೆ.", "voice": "A female speaker delivers a slightly expressive and animated speech with a moderate speed and pitch. The recording is of very high quality, with the speakers voice sounding clear and very close up."}'  -o audio_kannada_gpu_cloud.mp3
+```
+-->
+
+<!-- 
+  - [For Production (Docker)](#for-production-docker)
+### For Production (Docker)
+- **Prerequisites**: Docker and Docker Compose
+- **Steps**:
+  1. **Start the server**:
+  For GPU
+  ```bash
+  docker compose -f compose.yaml up -d
+  ```
+  For CPU only
+  ```bash
+  docker compose -f cpu-compose.yaml up -d
+  ```
+
+
+## Building Docker Image
+Build the Docker image locally:
+```bash
+docker build -t slabstech/tts_indic_server -f Dockerfile .
+```
+
+### Run the Docker Image
+```bash
+docker run --gpus all -it --rm -p 7860:7860 slabstech/tts_indic_server
+```
+
+-->

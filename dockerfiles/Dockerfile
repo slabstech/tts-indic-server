@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.6.0-cudnn-devel-ubuntu22.04
+FROM nvidia/cuda:12.8.0-cudnn-devel-ubuntu22.04
 
 WORKDIR /app
 
@@ -25,4 +25,4 @@ USER appuser
 EXPOSE 7860
 
 # Use absolute path for clarity
-CMD ["python", "/app/src/tts_api.py", "--host", "0.0.0.0", "--port", "7860", "--device", "cuda"]
+CMD ["python", "/app/src/server/tts_api.py", "--host", "0.0.0.0", "--port", "7860", "--device", "cuda"]
