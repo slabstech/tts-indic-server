@@ -63,23 +63,58 @@ We have hosted a Text to Speech (TTS) service that can be used to verify the acc
 huggingface_cli download ai4bharat/indic-parler-tts
 ```
 
+### Local Model Run
+```python
+import torch
+from parler_tts import ParlerTTSForConditionalGeneration
+from transformers import AutoTokenizer
+import soundfile as sf
+
+device = "cuda:0" if torch.cuda.is_available() else "cpu"
+
+model = ParlerTTSForConditionalGeneration.from_pretrained("ai4bharat/indic-parler-tts").to(device)
+tokenizer = AutoTokenizer.from_pretrained("ai4bharat/indic-parler-tts")
+description_tokenizer = AutoTokenizer.from_pretrained(model.config.text_encoder._name_or_path)
+
+prompt = "ನಿಮ್ಮ ಇನ್‌ಪುಟ್ ಪಠ್ಯವನ್ನು ಇಲ್ಲಿ ಸೇರಿಸಿ, ಸಾಮ್ರಾಜ್ಯದಲ್ಲಿ ಅತ್ಯುನ್ನತಸ್ಥಾನವನ್ನು ಗಳಿಸಿದೆ."
+description = "Anu speaks with a high pitch at a normal pace in a clear, close-sounding environment. Her neutral tone is captured with excellent audio quality"
+
+description_input_ids = description_tokenizer(description, return_tensors="pt").to(device)
+
+
+prompt_input_ids = tokenizer(prompt, return_tensors="pt").to(device)
+
+generation = model.generate(input_ids=description_input_ids.input_ids, attention_mask=description_input_ids.attention_mask, prompt_input_ids=prompt_input_ids.input_ids, prompt_attention_mask=prompt_input_ids.attention_mask)
+audio_arr = generation.cpu().numpy().squeeze()
+sf.write("indic_tts_out_1.wav", audio_arr, model.config.sampling_rate)
+```
+
+- Or Run the python code
+```bash
+python tts_code.py
+```
+
 ## Alternate forms of Development  
 
-**Install dependencies:**
-   ```bash
-   pip install -r server-requirements.txt
-   ```
+- Check the torch.compile option for fast inference.
+  - Suitable on Nvidia L4 GPU
+  - Source for fast inference - [torch.compile](torch_compile.py) example
+
+- Streaming example
+  - [source code](tts_streaming.py)
 
 ### For server development
 #### Running with FastAPI Server
+
+**Install dependencies:**
+  ```bash
+  pip install -r server-requirements.txt
+  ```
+
 Run the server using FastAPI with the desired language (e.g., Kannada):
 - for GPU
   ```bash
   python src/server/tts_api.py --port 7860 --host 0.0.0.0 --device gpu
-  ```
-- for CPU only
-  ```bash
-  python src/server/tts_api.py --port 7860 --host 0.0.0.0 --device cpu
   ```
 
 ### Evaluating Results
