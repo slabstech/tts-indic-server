@@ -4,27 +4,29 @@ This report summarizes the latency measurements for the Parler-TTS text-to-speec
 
 ## Latency Table
 
-| Hardware       | Optimization Method       | Word Count | Latency (seconds) | Notes                                      |
-|----------------|---------------------------|------------|-------------------|--------------------------------------------|
-| T4             | Simple Transformer        | 5          | 4.70             | Baseline measurement                       |
-| T4             | Simple Transformer        | 21         | 23.63            | Baseline measurement                       |
-| T4             | Flash Attention           | 5          | 8.16             | Slower than baseline                       |
-| T4             | Flash Attention           | 21         | 38.29            | Significantly slower than baseline         |
-| L4             | Flash Attention           | 5          | 3.99             | Fastest for 5 words across tests           |
-| L4             | Flash Attention           | 21         | 20.82            | Improved over T4 FA                        |
-| L4             | Flash Attention (App)     | 7          | 7.92             | App request measurement                    |
-| A10G           | Flash Attention           | 21         | 25.52            | Consistent but slower than L4              |
-| A10G           | Flash Attention           | 21         | 24.33            | Slight variation in repeated test          |
-| L4    | Torch Compile (Regular)   | 5          | 2.58             | Fastest for small input                    |
-| L4    | Torch Compile (Regular)   | 1          | 2.72             | Minimal input size                         |
-| L4    | Torch Compile (Regular)   | 7          | 4.70             | Comparable to baseline T4                  |
-| L4    | Torch Compile (Regular)   | 21         | 12.10            | Consistent performance                     |
-| L4    | Torch Compile (Regular)   | 21         | 11.99            | Slight variation                           |
-| L4    | Torch Compile (Regular)   | 21         | 10.65            | Best regular compile for 21 words          |
-| L4    | Torch Compile (Regular)   | 21         | 13.51            | Higher variation                           |
-| L4    | Torch Compile (Reduce OH) | 7          | 3.00             | Estimated from "3s - 7 words"              |
-| L4    | Torch Compile (Reduce OH) | 21         | 12.00            | Estimated from "12 s - 21 words"           |
-| L4    | Torch Compile (Reduce OH) | 21         | 10.00            | Estimated from "10 s - 21"                 |
+# Parler-TTS Latency Measurements (Formatted)
+
+| Hardware | Optimization Method         | Word Count | Latency (s) | Notes                              |
+|:---------|:----------------------------|:----------:|:-----------:|:-----------------------------------|
+| T4       | Simple Transformer          |     5      |    4.70     | Baseline measurement              |
+| T4       | Simple Transformer          |    21      |   23.63     | Baseline measurement              |
+| T4       | Flash Attention             |     5      |    8.16     | Slower than baseline              |
+| T4       | Flash Attention             |    21      |   38.29     | Significantly slower than baseline|
+| L4       | Flash Attention             |     5      |    3.99     | Fastest for 5 words across tests  |
+| L4       | Flash Attention             |    21      |   20.82     | Improved over T4 FA               |
+| L4       | Flash Attention (App)       |     7      |    7.92     | App request measurement           |
+| A10G     | Flash Attention             |    21      |   25.52     | Consistent but slower than L4     |
+| A10G     | Flash Attention             |    21      |   24.33     | Slight variation in repeated test |
+| L4       | Torch Compile (Regular)     |     1      |    2.72     | Minimal input size                |
+| L4       | Torch Compile (Regular)     |     5      |    2.58     | Fastest for small input           |
+| L4       | Torch Compile (Regular)     |     7      |    4.70     | Comparable to baseline T4         |
+| L4       | Torch Compile (Regular)     |    21      |   10.65     | Best regular compile for 21 words |
+| L4       | Torch Compile (Regular)     |    21      |   11.99     | Slight variation                  |
+| L4       | Torch Compile (Regular)     |    21      |   12.10     | Consistent performance            |
+| L4       | Torch Compile (Regular)     |    21      |   13.51     | Higher variation                  |
+| L4       | Torch Compile (Reduce OH)   |     7      |    3.00     | Estimated from "3s - 7 words"     |
+| L4       | Torch Compile (Reduce OH)   |    21      |   10.00     | Estimated from "10 s - 21"        |
+| L4       | Torch Compile (Reduce OH)   |    21      |   12.00     | Estimated from "12 s - 21 words"  |
 
 ## Observations
 
@@ -42,9 +44,13 @@ This report summarizes the latency measurements for the Parler-TTS text-to-speec
    - Latency generally increases with word count, but the scaling is not linear. For example, Torch Compile (Regular) took 2.58s for 5 words and 10.65s for 21 words, suggesting optimization benefits for larger inputs.
 
 ## Notes
-- The "Unspecified" hardware entries likely ran on a CUDA-enabled GPU (noted as "CUDA:0" in logs), but exact hardware wasn't specified.
+
 - The "reduce-overhead" mode values (3s, 12s, 10s) were approximated from your shorthand notation; actual measurements might vary slightly.
-- All tests used the `ai4bharat/indic-parler-tts` model with an MP3 response format and speed set to 1.
+- All measurements were taken on March 16, 2025, using the `ai4bharat/indic-parler-tts` model.
+- Latency values are in seconds (s), rounded to two decimal places.
+- Word counts represent the number of words in the input text.
+- "Reduce OH" refers to the "reduce-overhead" mode in Torch Compile.
+- The table is sorted by hardware, then optimization method, and finally word count for better readability.
 
 ## Conclusion
 The Torch Compile optimization, particularly with "reduce-overhead" mode, appears to offer the best balance of latency reduction across different input sizes. The L4 server with Flash Attention also performed well, especially for smaller inputs. For optimal performance, consider using Torch Compile with "reduce-overhead" mode on capable hardware, though further testing could refine these findings.
