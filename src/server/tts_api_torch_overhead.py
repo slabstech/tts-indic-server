@@ -2,23 +2,21 @@ import time
 from contextlib import asynccontextmanager
 from typing import Annotated, Any, OrderedDict, List
 import zipfile
-#import soundfile as sf
-#import torch
+import soundfile as sf
+import torch
 from fastapi import Body, FastAPI, HTTPException, Response
-#from parler_tts import ParlerTTSForConditionalGeneration
-#from transformers import AutoTokenizer, AutoFeatureExtractor, set_seed
-#import numpy as np
+from parler_tts import ParlerTTSForConditionalGeneration
+from transformers import AutoTokenizer, AutoFeatureExtractor, set_seed
+import numpy as np
 from config import SPEED, ResponseFormat, config
 from logger import logger
 import uvicorn
 import argparse
 from fastapi.responses import RedirectResponse, StreamingResponse
 import io
-#import os
-#import logging
-import requests
+import os
+import logging
 
-'''
 # Device setup
 if torch.cuda.is_available():
     device = "cuda:0"
@@ -73,12 +71,15 @@ class ModelManager:
 
         # Update model configuration
         model.config.pad_token_id = tokenizer.pad_token_id
+        # Update for deprecation: use max_batch_size instead of batch_size
         if hasattr(model.generation_config.cache_config, 'max_batch_size'):
             model.generation_config.cache_config.max_batch_size = 1
         model.generation_config.cache_implementation = "static"
 
         # Compile the model
+        ##compile_mode = "default"
         compile_mode = "reduce-overhead"
+        
         model.forward = torch.compile(model.forward, mode=compile_mode)
 
         # Warmup
@@ -94,7 +95,7 @@ class ModelManager:
             "prompt_attention_mask": warmup_inputs["attention_mask"],
         }
         
-        n_steps = 2
+        n_steps = 1 if compile_mode == "default" else 2
         for _ in range(n_steps):
             _ = model.generate(**model_kwargs)
 
@@ -115,10 +116,11 @@ class ModelManager:
         return self.model_tokenizer[model_name]
 
 model_manager = ModelManager()
-'''
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    # Removed pre-loading - using lazy loading approach
+    if not config.lazy_load_model:
+        model_manager.get_or_load_model(config.model)
     yield
 
 app = FastAPI(lifespan=lifespan)
@@ -129,9 +131,8 @@ def chunk_text(text, chunk_size):
     for i in range(0, len(words), chunk_size):
         chunks.append(' '.join(words[i:i + chunk_size]))
     return chunks
-'''
-# Original local generation endpoint
-@app.post("/v1/audio/speech_v1")
+
+@app.post("/v1/audio/speech")
 async def generate_audio(
     input: Annotated[str, Body()] = config.input,
     voice: Annotated[str, Body()] = config.voice,
@@ -159,6 +160,7 @@ async def generate_audio(
                                 padding="max_length",
                                 max_length=model_manager.max_length).to(device)
         
+        # Use the tensor fields directly instead of BatchEncoding object
         input_ids = desc_inputs["input_ids"]
         attention_mask = desc_inputs["attention_mask"]
         prompt_input_ids = prompt_inputs["input_ids"]
@@ -207,59 +209,6 @@ async def generate_audio(
     audio_buffer.seek(0)
 
     return StreamingResponse(audio_buffer, media_type=f"audio/{response_format}")
-'''
-# New external API endpoint
-@app.post("/v1/audio/speech")
-async def generate_audio_external(
-    input: Annotated[str, Body()] = config.input,
-    voice: Annotated[str, Body()] = config.voice,
-    model: Annotated[str, Body()] = config.model,
-    response_format: Annotated[ResponseFormat, Body(include_in_schema=False)] = config.response_format,
-    speed: Annotated[float, Body(include_in_schema=False)] = SPEED,
-) -> StreamingResponse:
-    EXTERNAL_API_URL = "https://gaganyatri-llm-indic-server.hf.space/v1/audio/speech"
-    
-    start = time.perf_counter()
-    
-    # Prepare request payload matching the external API
-    payload = {
-        "input": input,
-        "voice": voice,
-        "model": model,
-        "response_format": response_format,
-        "speed": speed
-    }
-    
-    headers = {
-        "accept": "application/json",
-        "Content-Type": "application/json"
-    }
-    
-    try:
-        response = requests.post(
-            EXTERNAL_API_URL,
-            json=payload,
-            headers=headers,
-            stream=True
-        )
-        
-        response.raise_for_status()
-        
-        logger.info(
-            f"Took {time.perf_counter() - start:.2f} seconds to generate audio for {len(input.split())} words using EXTERNAL_API"
-        )
-        
-        return StreamingResponse(
-            response.iter_content(chunk_size=8192),
-            media_type=f"audio/{response_format}"
-        )
-    
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Error calling external TTS API: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to generate audio: {str(e)}"
-        )
 
 def create_in_memory_zip(file_data):
     in_memory_zip = io.BytesIO()
@@ -268,7 +217,7 @@ def create_in_memory_zip(file_data):
             zipf.writestr(file_name, data)
     in_memory_zip.seek(0)
     return in_memory_zip
-'''
+
 @app.post("/v1/audio/speech_batch")
 async def generate_audio_batch(
     input: Annotated[List[str], Body()] = config.input,
@@ -336,7 +285,7 @@ async def generate_audio_batch(
     )
 
     return StreamingResponse(in_memory_zip, media_type="application/zip")
-'''
+
 @app.get("/")
 async def home():
     return RedirectResponse(url="/docs")
