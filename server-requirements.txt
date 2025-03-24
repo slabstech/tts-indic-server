@@ -1,6 +1,6 @@
 packaging
 torch
-transformers==4.48.0
+transformers @ git+https://github.com/huggingface/transformers@v4.49.0-Gemma-3
 sentencepiece
 descript-audio-codec
 descript-audiotools @ git+https://github.com/descriptinc/audiotools
