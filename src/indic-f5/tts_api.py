@@ -1,18 +1,17 @@
 import io
 import torch
-import librosa
 import requests
 import tempfile
 import numpy as np
 import soundfile as sf
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
-from fastapi.responses import StreamingResponse
+from fastapi import FastAPI, HTTPException
 from transformers import AutoModel
 from pydantic import BaseModel
-import uvicorn
+from typing import Optional
+from starlette.responses import StreamingResponse
 
 # Initialize FastAPI app
-app = FastAPI(title="IndicF5 TTS API", description="Text-to-Speech API for Indian Languages")
+app = FastAPI(title="IndicF5 Text-to-Speech API", description="High-quality TTS for Indian languages with Kannada output")
 
 # Load TTS model
 repo_id = "ai4bharat/IndicF5"
@@ -21,29 +20,78 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("Device:", device)
 model = model.to(device)
 
-# Supported languages
-SUPPORTED_LANGUAGES = [
-    "assamese", "bengali", "gujarati", "hindi", "kannada", "malayalam",
-    "marathi", "odia", "punjabi", "tamil", "telugu"
+# Example Data (Multiple Examples with URLs)
+EXAMPLES = [
+    {
+        "audio_name": "PAN_F (Happy)",
+        "audio_url": "https://github.com/AI4Bharat/IndicF5/raw/refs/heads/main/prompts/PAN_F_HAPPY_00002.wav",
+        "ref_text": "ਇੱਕ ਗ੍ਰਾਹਕ ਨੇ ਸਾਡੀ ਬੇਮਿਸਾਲ ਸੇਵਾ ਬਾਰੇ ਦਿਲੋਂਗਵਾਹੀ ਦਿੱਤੀ ਜਿਸ ਨਾਲ ਸਾਨੂੰ ਅਨੰਦ ಮਹਿਸೂਸ ਹੋਇਆ।",
+        "synth_text": "ನಾನು ಯಾವುದೇ ಚಿಂತೆ ಇಲ್ಲದೆ ನನ್ನ ಸ್ನೇಹಿತರನ್ನು ನನ್ನ ಆಟೋಮೊಬೈಲ್ ತಜ್ಞರ ಬಳಿಗೆ ಕಳುಹಿಸುತ್ತೇನೆ ಏಕೆಂದರೆ ಅವರು ಖಂಡಿತವಾಗಿಯೂ ಅವರ ಎಲ್ಲಾ ಅಗತ್ಯಗಳನ್ನು ಪೂರೈಸುತ್ತಾರೆ ಎಂದು ನನಗೆ ಗೊತ್ತು."
+    },
+    {
+        "audio_name": "TAM_F (Happy)",
+        "audio_url": "https://github.com/AI4Bharat/IndicF5/raw/refs/heads/main/prompts/TAM_F_HAPPY_00001.wav",
+        "ref_text": "நான் நெனச்ச மாதிரியே அமேசான்ல பெரிய தள்ளுபடி வந்திருக்கு. கம்மி காசுக்கே அந்தப் புது சேம்சங் மாடல வாங்கிடலாம்.",
+        "synth_text": "ಊಟದ ನಂತರ ಮೊಸರು ಅನ್ನ ತಿಂದರೆ ಒಂದು ಉತ್ಸಾಹವಾಗುತ್ತದೆ!"
+    },
+    {
+        "audio_name": "MAR_F (WIKI)",
+        "audio_url": "https://github.com/AI4Bharat/IndicF5/raw/refs/heads/main/prompts/MAR_F_WIKI_00001.wav",
+        "ref_text": "दिगंतराव्दारे अंतराळ कक्षेतला कचरा चिन्हित करण्यासाठी प्रयत्न केले जात आहे.",
+        "synth_text": "ಪ್ರಾರಂಭಿಕ ಬೀಜ ಚಿಗುರೊಡೆಯುವಿಕೆ. ನಾನು ಸೋಲಾಪುರ ಜಿಲ್ಲೆಯ ಮಾಲಶಿರಸ್ ತಾಲೂಕಿನ ರೈತ ಗಣಪತ್ ಪಾಟೀಲ್ ಮಾತನಾಡುತ್ತಿದ್ದೇನೆ. ನನ್ನ ಕಬ್ಬಿನ ಬೆಳೆಯಲ್ಲಿ ಪ್ರಾರಂಭಿಕ ಬೀಜ ಚಿಗುರೊಡೆಯುವ ಕೀಟ ಕಂಡುಬರುತ್ತಿದೆ. ಕ್ಲೋರಂಟ್ರಾನಿಲಿಪ್ರೋಲ್ (ಕೊರಾಜೆನ್) ಬಳಸುವುದು ಸೂಕ್ತವೇ? ಅದರ ಪ್ರಮಾಣ ಎಷ್ಟಿರಬೇಕು?"
+    },
+    {
+        "audio_name": "MAR_M (WIKI)",
+        "audio_url": "https://github.com/AI4Bharat/IndicF5/raw/refs/heads/main/prompts/MAR_M_WIKI_00001.wav",
+        "ref_text": "या प्रथाला एकोणीसशे पंचातर ईसवी पासून भारतीय दंड संहिताची धारा चारशे अठ्ठावीस आणि चारशे एकोणतीसच्या अन्तर्गत निषेध केला.",
+        "synth_text": "ಜೀವಾಣು ಕೊಳೆತ. ನಾನು ಅಹಮದ್‌ನಗರ ಜಿಲ್ಲೆಯ ರಾಹುರಿ ಗ್ರಾಮದಿಂದ ಬಾಳಾಸಾಹೇಬ್ ಜಾಧವ್ ಮಾತನಾಡುತ್ತಿದ್ದೇನೆ. ನನ್ನ ದಾಳಿಂಬೆ ತೋಟದಲ್ಲಿ ಜೀವಾಣು ಕೊಳೆತ ಹೆಚ್ಚಾಗಿ ಕಾಣಿಸುತ್ತಿದೆ. ಸ್ಟ್ರೆಪ್ಟೋಸೈಕ್ಲಿನ್ ಮತ್ತು ಕಾಪರ್ ಆಕ್ಸಿಕ್ಲೋರೈಡ್ ಸಿಂಪಡಣೆಗೆ ಸೂಕ್ತ ಪ್ರಮಾಣ ಎಷ್ಟು?"
+    },
+    {
+        "audio_name": "KAN_F (Happy)",
+        "audio_url": "https://github.com/AI4Bharat/IndicF5/raw/refs/heads/main/prompts/KAN_F_HAPPY_00001.wav",
+        "ref_text": "ನಮ್‌ ಫ್ರಿಜ್ಜಲ್ಲಿ  ಕೂಲಿಂಗ್‌ ಸಮಸ್ಯೆ ಆಗಿ ನಾನ್‌ ಭಾಳ ದಿನದಿಂದ ಒದ್ದಾಡ್ತಿದ್ದೆ, ಆದ್ರೆ ಅದ್ನೀಗ ಮೆಕಾನಿಕ್ ಆಗಿರೋ ನಿಮ್‌ ಸಹಾಯ್ದಿಂದ ಬಗೆಹರಿಸ್ಕೋಬೋದು ಅಂತಾಗಿ ನಿರಾಳ ಆಯ್ತು ನಂಗೆ.",
+        "synth_text": "ಚೆನ್ನೈನ ಶೇರ್ ಆಟೋ ಪ್ರಯಾಣಿಕರ ನಡುವೆ ಆಹಾರವನ್ನು ಹಂಚಿಕೊಂಡು ತಿನ್ನುವುದು ನನಗೆ ಮನಸ್ಸಿಗೆ ತುಂಬಾ ಒಳ್ಳೆಯದೆನಿಸುವ ವಿಷಯ."
+    },
 ]
 
-# Function to load audio from URL or uploaded file
-def load_audio(audio_content: bytes):
-    try:
-        audio_data, sample_rate = sf.read(io.BytesIO(audio_content))
+# Pydantic model for request body
+class SynthesizeRequest(BaseModel):
+    text: str  # Text to synthesize (expected in Kannada)
+    ref_audio_name: str  # Dropdown of audio names from EXAMPLES
+    ref_text: Optional[str] = None  # Optional, defaults to example ref_text if not provided
+
+# Function to load audio from URL
+def load_audio_from_url(url: str):
+    response = requests.get(url)
+    if response.status_code == 200:
+        audio_data, sample_rate = sf.read(io.BytesIO(response.content))
         return sample_rate, audio_data
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error loading audio: {str(e)}")
+    raise HTTPException(status_code=500, detail="Failed to load reference audio from URL.")
 
-# Core synthesis function
-def synthesize_speech(text: str, ref_audio: bytes, ref_text: str):
-    if not ref_audio or not ref_text.strip():
-        raise HTTPException(status_code=400, detail="Reference audio and text are required.")
+# Function to synthesize speech
+def synthesize_speech(text: str, ref_audio_name: str, ref_text: str):
+    # Find the matching example
+    ref_audio_url = None
+    for example in EXAMPLES:
+        if example["audio_name"] == ref_audio_name:
+            ref_audio_url = example["audio_url"]
+            if not ref_text:
+                ref_text = example["ref_text"]
+            break
+    
+    if not ref_audio_url:
+        raise HTTPException(status_code=400, detail="Invalid reference audio name.")
 
-    # Load reference audio
-    sample_rate, audio_data = load_audio(ref_audio)
+    if not text.strip():
+        raise HTTPException(status_code=400, detail="Text to synthesize cannot be empty.")
+    
+    if not ref_text or not ref_text.strip():
+        raise HTTPException(status_code=400, detail="Reference text cannot be empty.")
 
-    # Save reference audio to temporary file
+    # Load reference audio from URL
+    sample_rate, audio_data = load_audio_from_url(ref_audio_url)
+
+    # Save reference audio to a temporary file
     with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_audio:
         sf.write(temp_audio.name, audio_data, samplerate=sample_rate, format='WAV')
         temp_audio.flush()
@@ -55,54 +103,38 @@ def synthesize_speech(text: str, ref_audio: bytes, ref_text: str):
     if audio.dtype == np.int16:
         audio = audio.astype(np.float32) / 32768.0
 
-    # Save generated audio to bytes
-    output_buffer = io.BytesIO()
-    sf.write(output_buffer, audio, 24000, format='WAV')
-    output_buffer.seek(0)
+    # Save generated audio to a BytesIO buffer
+    buffer = io.BytesIO()
+    sf.write(buffer, audio, 24000, format='WAV')
+    buffer.seek(0)
 
-    return output_buffer
+    return buffer
 
-# Pydantic model for request validation
-class TTSRequest(BaseModel):
-    text: str
-    ref_text: str
+# FastAPI endpoint
+@app.post("/synthesize", response_class=StreamingResponse)
+async def synthesize(request: SynthesizeRequest):
+    # If ref_text is not provided, it will default to the example's ref_text in the synthesize_speech function
+    audio_buffer = synthesize_speech(request.text, request.ref_audio_name, request.ref_text)
+    
+    # Return the audio as a streaming response
+    return StreamingResponse(
+        audio_buffer,
+        media_type="audio/wav",
+        headers={"Content-Disposition": "attachment; filename=synthesized_speech.wav"}
+    )
 
-# Default endpoint
+# Root endpoint with basic info
 @app.get("/")
 async def root():
-    return {"message": "Welcome to IndicF5 TTS API. Use /synthesize/{language} to generate speech."}
+    return {
+        "message": "Welcome to IndicF5 Text-to-Speech API",
+        "description": "High-quality TTS for Indian languages with output in Kannada. Provide Kannada text for synthesis.",
+        "endpoint": "/synthesize",
+        "available_ref_audio_names": [ex["audio_name"] for ex in EXAMPLES],
+        "example_synth_texts_in_kannada": {ex["audio_name"]: ex["synth_text"] for ex in EXAMPLES}
+    }
 
-# Dynamic endpoint for each language
-for language in SUPPORTED_LANGUAGES:
-    @app.post(f"/synthesize/{language}", response_class=StreamingResponse)
-    async def synthesize_language(
-        text: str = Form(...),
-        ref_text: str = Form(...),
-        ref_audio: UploadFile = File(...)
-    ):
-        try:
-            # Read uploaded audio file
-            ref_audio_content = await ref_audio.read()
-
-            # Synthesize speech
-            audio_buffer = synthesize_speech(text, ref_audio_content, ref_text)
-
-            # Return audio as streaming response
-            return StreamingResponse(
-                audio_buffer,
-                media_type="audio/wav",
-                headers={"Content-Disposition": f"attachment; filename={language}_output.wav"}
-            )
-        except HTTPException as e:
-            raise e
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Error generating speech: {str(e)}")
-
-# Health check endpoint
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy", "device": str(device), "supported_languages": SUPPORTED_LANGUAGES}
-
-# Run the server
+# Run the app (use `uvicorn` to start the server)
 if __name__ == "__main__":
+    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
