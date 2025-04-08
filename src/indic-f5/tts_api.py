@@ -25,7 +25,7 @@ EXAMPLES = [
     {
         "audio_name": "PAN_F (Happy)",
         "audio_url": "https://github.com/AI4Bharat/IndicF5/raw/refs/heads/main/prompts/PAN_F_HAPPY_00002.wav",
-        "ref_text": "ਇੱਕ ਗ੍ਰਾਹਕ ਨੇ ਸਾਡੀ ਬੇਮਿਸਾਲ ਸੇਵਾ ਬਾਰੇ ਦਿਲੋਂਗਵਾਹੀ ਦਿੱਤੀ ਜਿਸ ਨਾਲ ਸਾਨੂੰ ਅਨੰਦ ಮਹਿਸೂਸ ਹੋਇਆ।",
+        "ref_text": "ਇੱਕ ਗ੍ਰਾਹਕ ਨੇ ਸਾਡੀ ਬੇਮਿਸਾਲ ਸੇਵਾ ਬਾਰੇ ਦਿਲੋਂਗਵਾਹੀ ਦਿੱਤੀ ਜਿਸ ਨਾਲ ਸਾਨੂੰ ਅਨੰದ ಮਹಿಸೂਸ ਹੋਇਆ।",
         "synth_text": "ನಾನು ಯಾವುದೇ ಚಿಂತೆ ಇಲ್ಲದೆ ನನ್ನ ಸ್ನೇಹಿತರನ್ನು ನನ್ನ ಆಟೋಮೊಬೈಲ್ ತಜ್ಞರ ಬಳಿಗೆ ಕಳುಹಿಸುತ್ತೇನೆ ಏಕೆಂದರೆ ಅವರು ಖಂಡಿತವಾಗಿಯೂ ಅವರ ಎಲ್ಲಾ ಅಗತ್ಯಗಳನ್ನು ಪೂರೈಸುತ್ತಾರೆ ಎಂದು ನನಗೆ ಗೊತ್ತು."
     },
     {
@@ -43,7 +43,7 @@ EXAMPLES = [
     {
         "audio_name": "MAR_M (WIKI)",
         "audio_url": "https://github.com/AI4Bharat/IndicF5/raw/refs/heads/main/prompts/MAR_M_WIKI_00001.wav",
-        "ref_text": "या प्रथाला एकोणीसशे पंचातर ईसवी पासून भारतीय दंड संहिताची धारा चारशे अठ्ठावीस आणि चारशे एकोणतीसच्या अन्तर्गत निषेध केला.",
+        "ref_text": "या प्रथाला एकोणीसशे पंचातर ईसवी पासून भारतीय दंड संहिताची धारा चारशे अठ्ठावीस आणि चारशे एकोणतीसच्या अंतर्गत निषেধ केला.",
         "synth_text": "ಜೀವಾಣು ಕೊಳೆತ. ನಾನು ಅಹಮದ್‌ನಗರ ಜಿಲ್ಲೆಯ ರಾಹುರಿ ಗ್ರಾಮದಿಂದ ಬಾಳಾಸಾಹೇಬ್ ಜಾಧವ್ ಮಾತನಾಡುತ್ತಿದ್ದೇನೆ. ನನ್ನ ದಾಳಿಂಬೆ ತೋಟದಲ್ಲಿ ಜೀವಾಣು ಕೊಳೆತ ಹೆಚ್ಚಾಗಿ ಕಾಣಿಸುತ್ತಿದೆ. ಸ್ಟ್ರೆಪ್ಟೋಸೈಕ್ಲಿನ್ ಮತ್ತು ಕಾಪರ್ ಆಕ್ಸಿಕ್ಲೋರೈಡ್ ಸಿಂಪಡಣೆಗೆ ಸೂಕ್ತ ಪ್ರಮಾಣ ಎಷ್ಟು?"
     },
     {
@@ -54,11 +54,14 @@ EXAMPLES = [
     },
 ]
 
-# Pydantic model for request body
+# Pydantic models for request bodies
 class SynthesizeRequest(BaseModel):
     text: str  # Text to synthesize (expected in Kannada)
     ref_audio_name: str  # Dropdown of audio names from EXAMPLES
     ref_text: Optional[str] = None  # Optional, defaults to example ref_text if not provided
+
+class KannadaSynthesizeRequest(BaseModel):
+    text: str  # Text to synthesize (must be in Kannada)
 
 # Function to load audio from URL
 def load_audio_from_url(url: str):
@@ -109,18 +112,37 @@ def synthesize_speech(text: str, ref_audio_name: str, ref_text: str):
     buffer.seek(0)
 
     return buffer
-
-# FastAPI endpoint
+'''
+# Original endpoint
 @app.post("/synthesize", response_class=StreamingResponse)
 async def synthesize(request: SynthesizeRequest):
-    # If ref_text is not provided, it will default to the example's ref_text in the synthesize_speech function
     audio_buffer = synthesize_speech(request.text, request.ref_audio_name, request.ref_text)
-    
-    # Return the audio as a streaming response
     return StreamingResponse(
         audio_buffer,
         media_type="audio/wav",
         headers={"Content-Disposition": "attachment; filename=synthesized_speech.wav"}
+    )
+'''
+# New endpoint for Kannada-only synthesis
+@app.post("/audio/speech", response_class=StreamingResponse)
+async def synthesize_kannada(request: KannadaSynthesizeRequest):
+    # Use the Kannada example as fixed reference
+    kannada_example = next(ex for ex in EXAMPLES if ex["audio_name"] == "KAN_F (Happy)")
+    
+    if not request.text.strip():
+        raise HTTPException(status_code=400, detail="Text to synthesize cannot be empty.")
+    
+    # Use the fixed Kannada reference audio and text
+    audio_buffer = synthesize_speech(
+        text=request.text,
+        ref_audio_name="KAN_F (Happy)",
+        ref_text=kannada_example["ref_text"]
+    )
+    
+    return StreamingResponse(
+        audio_buffer,
+        media_type="audio/wav",
+        headers={"Content-Disposition": "attachment; filename=synthesized_kannada_speech.wav"}
     )
 
 # Root endpoint with basic info
@@ -129,12 +151,15 @@ async def root():
     return {
         "message": "Welcome to IndicF5 Text-to-Speech API",
         "description": "High-quality TTS for Indian languages with output in Kannada. Provide Kannada text for synthesis.",
-        "endpoint": "/synthesize",
+        "endpoints": {
+            "/synthesize": "General synthesis with customizable reference audio",
+            "/synthesize_kannada": "Kannada-specific synthesis using KAN_F (Happy) as reference"
+        },
         "available_ref_audio_names": [ex["audio_name"] for ex in EXAMPLES],
         "example_synth_texts_in_kannada": {ex["audio_name"]: ex["synth_text"] for ex in EXAMPLES}
     }
 
-# Run the app (use `uvicorn` to start the server)
+# Run the app
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=7860)
