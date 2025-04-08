@@ -251,6 +251,17 @@ Also you can join the [discord group](https://discord.gg/WZMCerEZ2P) to collabor
   archivePrefix = {arXiv},
   primaryClass = {cs.SD}
 }
+
+
+### 🔹 BibTeX
+```bibtex
+@misc{AI4Bharat_IndicF5_2025,
+  author       = {Praveen S V and Srija Anand and Soma Siddhartha and Mitesh M. Khapra},
+  title        = {IndicF5: High-Quality Text-to-Speech for Indian Languages},
+  year         = {2025},
+  url          = {https://github.com/AI4Bharat/IndicF5},
+}
+
 ```
 
 
