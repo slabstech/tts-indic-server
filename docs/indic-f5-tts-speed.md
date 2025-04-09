@@ -16,3 +16,4 @@ https://github.com/DakeQQ/F5-TTS-ONNX
 
 https://github.com/WGS-note/F5_TTS_Faster
 
+https://github.com/WGS-note/TTS-StressTest
