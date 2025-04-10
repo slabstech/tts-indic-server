@@ -1,7 +1,7 @@
 # TTS Indic Server
 
 ## Overview
-Text to Speech (TTS) for Indian languages using [ai4bharat/indic-parler-tts](https://huggingface.co/ai4bharat/indic-parler-tts)  model.
+Text to Speech (TTS) for Indian languages using [ai4bharat/IndicF5](https://huggingface.co/ai4bharat/IndicF5)  model.
 
 ## Table of Contents
 - [Live Server](#live-server)
@@ -60,56 +60,46 @@ We have hosted a Text to Speech (TTS) service that can be used to verify the acc
 ## Downloading Indic TTS Model
 
 ```bash download_model.sh
-huggingface_cli download ai4bharat/indic-parler-tts
+huggingface_cli download ai4bharat/IndicF5
 ```
 
 ### Local Model Run
 ```python
-import torch
-from parler_tts import ParlerTTSForConditionalGeneration
-from transformers import AutoTokenizer
+from transformers import AutoModel
+import numpy as np
 import soundfile as sf
 
-device = "cuda:0" if torch.cuda.is_available() else "cpu"
-
-model = ParlerTTSForConditionalGeneration.from_pretrained("ai4bharat/indic-parler-tts").to(device)
-tokenizer = AutoTokenizer.from_pretrained("ai4bharat/indic-parler-tts")
-description_tokenizer = AutoTokenizer.from_pretrained(model.config.text_encoder._name_or_path)
-
-prompt = "ನಿಮ್ಮ ಇನ್‌ಪುಟ್ ಪಠ್ಯವನ್ನು ಇಲ್ಲಿ ಸೇರಿಸಿ, ಸಾಮ್ರಾಜ್ಯದಲ್ಲಿ ಅತ್ಯುನ್ನತಸ್ಥಾನವನ್ನು ಗಳಿಸಿದೆ."
-description = "Anu speaks with a high pitch at a normal pace in a clear, close-sounding environment. Her neutral tone is captured with excellent audio quality"
-
-description_input_ids = description_tokenizer(description, return_tensors="pt").to(device)
+# Load INF5 from Hugging Face
+repo_id = "ai4bharat/IndicF5"
+model = AutoModel.from_pretrained(repo_id, trust_remote_code=True)
 
 
-prompt_input_ids = tokenizer(prompt, return_tensors="pt").to(device)
+# Generate speech
+audio = model(
+    "ಬೆಂಗಳೂರು ಕರ್ನಾಟಕ ರಾಜ್ಯದ ರಾಜಧಾನಿ ಆಗಿದೆ, ಕರ್ನಾಟಕದಲ್ಲಿ ನಾವು ಕನ್ನಡ ಮಾತನಾಡುತ್ತೇವೆ",
+    ref_audio_path="prompts/KAN_F_HAPPY_00001.wav",
+    ref_text="ನಮ್‌ ಫ್ರಿಜ್ಜಲ್ಲಿ  ಕೂಲಿಂಗ್‌ ಸಮಸ್ಯೆ ಆಗಿ ನಾನ್‌ ಭಾಳ ದಿನದಿಂದ ಒದ್ದಾಡ್ತಿದ್ದೆ, ಆದ್ರೆ ಅದ್ನೀಗ ಮೆಕಾನಿಕ್ ಆಗಿರೋ ನಿಮ್‌ ಸಹಾಯ್ದಿಂದ ಬಗೆಹರಿಸ್ಕೋಬೋದು ಅಂತಾಗಿ ನಿರಾಳ ಆಯ್ತು ನಂಗೆ."
+)
 
-generation = model.generate(input_ids=description_input_ids.input_ids, attention_mask=description_input_ids.attention_mask, prompt_input_ids=prompt_input_ids.input_ids, prompt_attention_mask=prompt_input_ids.attention_mask)
-audio_arr = generation.cpu().numpy().squeeze()
-sf.write("indic_tts_out_1.wav", audio_arr, model.config.sampling_rate)
+
+# Normalize and save output
+if audio.dtype == np.int16:
+    audio = audio.astype(np.float32) / 32768.0
+sf.write("namaste.wav", np.array(audio, dtype=np.float32), samplerate=24000)
 ```
 
 - Or Run the python code
 ```bash
-python tts_code.py
+python tts_indic_f5.py
 ```
 
-## Alternate forms of Development  
 
-- Check the torch.compile option for fast inference.
-  - Suitable on Nvidia L4 GPU
-  - Source for fast inference - [torch.compile](torch_compile.py) example
-
-- Streaming example
-  - [source code](tts_streaming.py)
-
+<!-- 
 ### For server development
 #### Running with FastAPI Server
 
 **Install dependencies:**
-  ```bash
-  pip install -r server-requirements.txt
-  ```
+
 
 Run the server using FastAPI with the desired language (e.g., Kannada):
 - for GPU
@@ -220,6 +210,7 @@ The model includes **69 speakers** across 18 officially supported languages, wit
 10. **Anjali - High-Pitched, Neutral Tone**:
     _"Anjali speaks with a high pitch at a normal pace in a clear, close-sounding environment. Her neutral tone is captured with excellent audio quality."_
 
+-->
 ## Contributing
 
 We welcome contributions! Please read the [CONTRIBUTING.md](CONTRIBUTING.md) file for guidelines on how to contribute to this project.
@@ -251,9 +242,9 @@ Also you can join the [discord group](https://discord.gg/WZMCerEZ2P) to collabor
   archivePrefix = {arXiv},
   primaryClass = {cs.SD}
 }
+```
 
 
-### 🔹 BibTeX
 ```bibtex
 @misc{AI4Bharat_IndicF5_2025,
   author       = {Praveen S V and Srija Anand and Soma Siddhartha and Mitesh M. Khapra},
@@ -266,6 +257,21 @@ Also you can join the [discord group](https://discord.gg/WZMCerEZ2P) to collabor
 
 
 <!--
+
+
+
+## Alternate forms of Development  
+
+- Check the torch.compile option for fast inference.
+  - Suitable on Nvidia L4 GPU
+  - Source for fast inference - [torch.compile](torch_compile.py) example
+
+- Streaming example
+  - [source code](tts_streaming.py)
+
+
+
+
 ## Usage
 
 ### How to Use the Service
