@@ -1,0 +1,3 @@
+torch
+parler_tts @ git+https://github.com/slabstech/parler-tts.git
+huggingface_hub

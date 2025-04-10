@@ -4,11 +4,12 @@ __pycache__/
 *$py.class
 venv_new/
 NeMo/
+! prompts/KAN_F_HAPPY_00001.wav
 asr_venv
 *.nemo
 # C extensions
 *.so
-*.wav
+#*.wav
 *.mp3
 *.log
 # Distribution / packaging
