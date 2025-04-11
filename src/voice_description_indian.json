@@ -1,0 +1,64 @@
+{
+  "usecases": [
+    {
+      "id": 0,
+      "voice_description": "Anu greeting a customer in a retail store",
+      "user_domain_voice": "Retail",
+      "output_filename": "anu_greeting_customer.mp3"
+    },
+    {
+      "id": 1,
+      "voice_description": "Suresh providing weather updates",
+      "user_domain_voice": "Weather",
+      "output_filename": "suresh_weather_update.mp3"
+    },
+    {
+      "id": 2,
+      "voice_description": "Anu assisting with online banking queries",
+      "user_domain_voice": "Banking",
+      "output_filename": "anu_banking_assistance.mp3"
+    },
+    {
+      "id": 3,
+      "voice_description": "Suresh narrating a news bulletin",
+      "user_domain_voice": "News",
+      "output_filename": "suresh_news_bulletin.mp3"
+    },
+    {
+      "id": 4,
+      "voice_description": "Anu guiding through a mobile app tutorial",
+      "user_domain_voice": "Technology",
+      "output_filename": "anu_app_tutorial.mp3"
+    },
+    {
+      "id": 5,
+      "voice_description": "Suresh explaining a recipe step-by-step",
+      "user_domain_voice": "Cooking",
+      "output_filename": "suresh_recipe_explanation.mp3"
+    },
+    {
+      "id": 6,
+      "voice_description": "Anu answering frequently asked questions in healthcare",
+      "user_domain_voice": "Healthcare",
+      "output_filename": "anu_healthcare_faq.mp3"
+    },
+    {
+      "id": 7,
+      "voice_description": "Suresh narrating an audiobook chapter",
+      "user_domain_voice": "Entertainment",
+      "output_filename": "suresh_audiobook_chapter.mp3"
+    },
+    {
+      "id": 8,
+      "voice_description": "Anu giving instructions for a workout session",
+      "user_domain_voice": "Fitness",
+      "output_filename": "anu_workout_instructions.mp3"
+    },
+    {
+      "id": 9,
+      "voice_description": "Suresh providing customer support for an e-commerce platform",
+      "user_domain_voice": "E-commerce",
+      "output_filename": "suresh_customer_support.mp3"
+    }
+  ]
+}
