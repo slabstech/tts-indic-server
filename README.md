@@ -57,6 +57,7 @@ We have hosted a Text to Speech (TTS) service that can be used to verify the acc
     pip install -r requirements.txt
     ```
 
+pip install f5_tts
 ## Downloading Indic TTS Model
 
 ```bash download_model.sh

@@ -27,3 +27,4 @@ fastapi
 uvicorn 
 numpy 
 requests
+vllm
