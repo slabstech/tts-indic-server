@@ -10,6 +10,7 @@ WORKDIR /app
 # Copy the rest of the application code
 COPY . .
 
+RUN pip install slowapi pydantic_settings num2words
 
 # Create a non-root user and set ownership
 RUN useradd -ms /bin/bash appuser \
