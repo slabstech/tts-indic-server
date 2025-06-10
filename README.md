@@ -1,5 +1,11 @@
 # TTS Indic Server
 
+<!-- 
+ sudo docker build -t slabstech/dwani-tts:latest .
+
+
+sudo docker run --runtime nvidia -it --rm -p 7864:7864 slabstech/dwani-tts
+-->
 ```bash
 git clone https://github.com/dwani-ai/tts-indic-server
 cd tts-indic-server

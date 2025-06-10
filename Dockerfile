@@ -23,7 +23,9 @@ RUN pip install --upgrade pip setuptools
 
 RUN pip install --upgrade pip setuptools wheel
 
-RUN pip install torch
+
+RUN pip install torch==2.7.1 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
+
 #RUN pip install flash-attn --no-build-isolation
 
 
