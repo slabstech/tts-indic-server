@@ -52,4 +52,4 @@ EXPOSE 7860
 
 
 # Run the TTS API server
-CMD ["python", "/app/src/gh200/main.py", "--host", "0.0.0.0", "--port", "7864", "--device", "cuda"]
+CMD ["python", "/app/src/gh200/main.py", "--host", "0.0.0.0", "--port", "7864", "--config", "config_two"]
