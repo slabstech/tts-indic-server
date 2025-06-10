@@ -24,12 +24,12 @@ RUN pip install --upgrade pip setuptools
 RUN pip install --upgrade pip setuptools wheel
 
 RUN pip install torch
-#RUN pip install flash-attn --no-build-isolation
+RUN pip install flash-attn --no-build-isolation
 
 
 # Copy requirements file and install Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY server-requirements.txt .
+RUN pip install --no-cache-dir -r server-requirements.txt
 
 
 # Copy the rest of the application code
@@ -50,4 +50,4 @@ EXPOSE 7860
 
 
 # Run the TTS API server
-CMD ["python", "/app/src/gh200/main.py", "--host", "0.0.0.0", "--port", "7864", "--device", "cuda"]
+CMD ["python", "/app/src/server/tts_api.py", "--host", "0.0.0.0", "--port", "7860", "--device", "cuda"]
