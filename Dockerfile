@@ -10,8 +10,9 @@ WORKDIR /app
 # Copy the rest of the application code
 COPY . .
 
-RUN pip install slowapi pydantic_settings num2words
-
+RUN pip install slowapi pydantic_settings pydub matplotlib vocos torchdiffeq librosa jieba pypinyin x_transformers wandb
+RUN pip install ema_pytorch wandb datasets
+RUN pip install numpy==1.26.4
 
 # Expose port for the API
 EXPOSE 7864
