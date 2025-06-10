@@ -12,17 +12,9 @@ COPY . .
 
 RUN pip install slowapi pydantic_settings num2words
 
-# Create a non-root user and set ownership
-RUN useradd -ms /bin/bash appuser \
-    && chown -R appuser:appuser /app
-
-
-# Switch to non-root user
-USER appuser
-
 
 # Expose port for the API
-EXPOSE 7860
+EXPOSE 7864
 
 
 # Run the TTS API server

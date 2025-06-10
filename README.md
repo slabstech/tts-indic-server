@@ -5,6 +5,16 @@
 
 
 sudo docker run --runtime nvidia -it --rm -p 7864:7864 slabstech/dwani-tts
+
+sudo docker run --runtime nvidia -it --rm -p 7864:7864 -e HF_TOKEN=$HF_TOKEN slabstech/dwani-tts
+
+sudo docker run --runtime nvidia -it --rm \
+    -p 7864:7864 \
+    -v ~/hf-cache:/data/hf-cache \
+    -e HF_HOME=/data/hf-cache \
+    -e HF_TOKEN=$HF_TOKEN \
+    slabstech/dwani-tts
+
 -->
 ```bash
 git clone https://github.com/dwani-ai/tts-indic-server
